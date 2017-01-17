@@ -4,6 +4,7 @@
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 
 #include "OctopusGraph.h"
+#include "GraphvizWriter.h"
 
 using namespace llvm;
 
@@ -14,6 +15,8 @@ namespace {
 		OctopusGraphPass();
 
 		virtual bool runOnFunction(Function &F);
+
+		virtual bool doFinalization(Module &M);
 
 	private:
 
@@ -39,6 +42,12 @@ bool OctopusGraphPass::runOnFunction(Function &F)
 		// link basic block with predecessors and successors?
 		octopus_graph.linkBasicBlock(*b);
 	}
+	return false;
+}
+
+bool OctopusGraphPass::doFinalization(Module &M)
+{
+	GraphvizWriter::writeOctopusGraph(octopus_graph);
 	return false;
 }
 
