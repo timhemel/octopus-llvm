@@ -2,7 +2,9 @@
 #include <list>
 #include <set>
 #include <string>
+#include <ostream>
 #include "llvm/IR/Function.h"
+#include "llvm/IR/ModuleSlotTracker.h"
 
 using namespace llvm;
 
@@ -34,6 +36,11 @@ namespace Octopus {
 	public:
 		InstructionNode(Instruction *instruction);
 		virtual std::string getCode();
+	protected:
+
+		virtual void renderLHS(std::ostream &ost);
+		virtual void renderOpcode(std::ostream &ost);
+		virtual void renderOperands(std::ostream &ost);
 	private:
 		Instruction *llvm_instruction;
 		std::string code;

@@ -3,6 +3,8 @@
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 
+#include "llvm/IR/ModuleSlotTracker.h"
+
 #include "OctopusGraph.h"
 #include "GraphvizWriter.h"
 
@@ -16,6 +18,7 @@ namespace {
 
 		virtual bool runOnFunction(Function &F);
 
+		virtual bool doInitialization(Module &M);
 		virtual bool doFinalization(Module &M);
 
 	private:
@@ -42,6 +45,11 @@ bool OctopusGraphPass::runOnFunction(Function &F)
 		// link basic block with predecessors and successors?
 		octopus_graph.linkBasicBlock(*b);
 	}
+	return false;
+}
+
+bool OctopusGraphPass::doInitialization(Module &M)
+{
 	return false;
 }
 

@@ -1,6 +1,5 @@
 #include <sstream>
 #include "llvm/Support/raw_ostream.h"
-#include "llvm/IR/ModuleSlotTracker.h"
 #include "OctopusGraph.h"
 
 namespace Octopus {
@@ -40,9 +39,11 @@ namespace Octopus {
 		InstructionNode *instruction_node = instruction_map[instruction];
 		if (instruction_node == 0) {
 			errs() << "instruction node for " << instruction << " does NOT exist!\n";
+			// TODO: replace with factory method
 			instruction_node = new InstructionNode(instruction);
 			nodes.push_back(instruction_node);
 			instruction_map[instruction] = instruction_node;
+			// TODO: update slot map
 		} else {
 			errs() << "instruction node for " << instruction << " exists!\n";
 		}
@@ -80,17 +81,16 @@ namespace Octopus {
 		llvm_instruction->print(errs());
 		errs() << "\n";
 
-		ModuleSlotTracker MST(llvm_instruction->getModule(),true);
+		// ModuleSlotTracker MST(llvm_instruction->getModule(),true);
 		errs() << "module " << llvm_instruction->getModule() << "\n";
 		// MST.getMachine();//->initialize();
 
 		std::ostringstream ost;
-		if (llvm_instruction->hasName()) {
-			ost << '%' << llvm_instruction->getName().str() << " = ";
-		} else if (!llvm_instruction->getType()->isVoidTy()) {
-			ost << '%' << MST.getLocalSlot(llvm_instruction) << " = ";
-		}
-		ost << llvm_instruction->getOpcodeName();
+
+		renderLHS(ost);
+		renderOpcode(ost);
+		renderOperands(ost);
+
 		return ost.str();
 		
 		// AssemblyAnnotationWriter aw;
@@ -99,6 +99,28 @@ namespace Octopus {
 		// AssemblyWriter::printInstruction
 		//
 		// to get slot, use Machine object
+	}
+
+	void InstructionNode::renderLHS(std::ostream &ost)
+	{
+		if (llvm_instruction->hasName()) {
+			ost << '%' << llvm_instruction->getName().str() << " = ";
+		} else if (!llvm_instruction->getType()->isVoidTy()) {
+			// ost << '%' << mst->getLocalSlot(llvm_instruction) << " = ";
+		}
+	}
+
+	void InstructionNode::renderOpcode(std::ostream &ost)
+	{
+		ost << llvm_instruction->getOpcodeName();
+	}
+
+	void InstructionNode::renderOperands(std::ostream &ost)
+	{
+		for (unsigned i=0, E = llvm_instruction->getNumOperands(); i != E; ++i) {
+			if (i) ost << ", ";
+			ost << llvm_instruction->getOperand(i)->getType();
+		}
 	}
 
 }
