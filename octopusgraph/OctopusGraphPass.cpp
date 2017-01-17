@@ -41,6 +41,7 @@ bool OctopusGraphPass::runOnFunction(Function &F)
 	octopus_graph.initializeFunction();
 	octopus_graph.createEntryAndExitNodesForFunction(F);
 	for(Function::iterator b = F.begin(), be = F.end(); b != be; ++b) {
+		octopus_graph.addBlockLabel(*b);
 		// create all instruction nodes and link them
 		octopus_graph.createAndConnectInstructionNodesForBasicBlock(*b);
 		// link basic block with predecessors and successors?

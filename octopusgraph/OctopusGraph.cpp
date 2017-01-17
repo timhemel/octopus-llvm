@@ -18,6 +18,11 @@ namespace Octopus {
 	{
 	}
 
+	void OctopusGraph::addBlockLabel(BasicBlock &B)
+	{
+		slot_tracker.add(&B);
+	}
+
 	void OctopusGraph::createAndConnectInstructionNodesForBasicBlock(BasicBlock &B)
 	{
 		Instruction *prev_instruction = 0;
@@ -140,8 +145,12 @@ namespace Octopus {
 				ost << '%' << op->getName().str();
 			} else {
 				int slot = octopus_graph.slot_tracker.getSlotIndex(op);
-				// ost << llvm_instruction->getOperand(i)->getType();
-				ost << '%' << slot;
+				if (slot != 0) {
+					// ost << llvm_instruction->getOperand(i)->getType();
+					ost << '%' << slot;
+				} else {
+					ost << op;
+				}
 			}
 		}
 	}
