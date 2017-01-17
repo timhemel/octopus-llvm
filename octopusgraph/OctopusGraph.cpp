@@ -53,16 +53,12 @@ namespace Octopus {
 	{
 		InstructionNode *instruction_node = instruction_map[instruction];
 		if (instruction_node == 0) {
-			errs() << "instruction node for " << instruction << " does NOT exist!\n";
 			// TODO: replace with factory method
 			instruction_node = new InstructionNode(*this,instruction);
 			nodes.push_back(instruction_node);
 			instruction_map[instruction] = instruction_node;
 			updateSlotMap(instruction_node);
-		} else {
-			errs() << "instruction node for " << instruction << " exists!\n";
 		}
-		// errs() << "instruction " << instruction << "\n";
 		return instruction_node;
 	}
 
@@ -91,20 +87,16 @@ namespace Octopus {
 
 	Edge::Edge(std::string label, Node *source_node, Node *destination_node) : label(label), source_node(source_node), destination_node(destination_node)
 	{
-		errs() << "edge " << source_node << " -[" << label << "]-> " << destination_node << "\n";
+		// errs() << "edge " << source_node << " -[" << label << "]-> " << destination_node << "\n";
 	}
 
 	InstructionNode::InstructionNode(OctopusGraph &ograph, Instruction *instruction) : octopus_graph(ograph)
 	{
 		llvm_instruction = instruction;
-		instruction->dump();
 	}
 
 	std::string InstructionNode::getCode()
 	{
-		llvm_instruction->print(errs());
-		errs() << "\n";
-
 		std::ostringstream ost;
 
 		renderLHS(ost);
