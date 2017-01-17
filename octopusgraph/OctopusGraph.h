@@ -1,0 +1,7 @@
+
+namespace OctopusGraph {
+
+	class OctopusGraph {
+	};
+}
+
