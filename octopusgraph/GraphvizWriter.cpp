@@ -5,9 +5,20 @@
 using namespace Octopus;
 
 namespace {
+
+	void writeHeader()
+	{
+		errs() << "digraph G {\n";
+	}
+
+	void writeFooter()
+	{
+		errs() << "}\n";
+	}
+
 	void writeNode(Node *n)
 	{
-		errs() << "v" << (size_t) n;
+		errs() << "\tv" << (size_t) n;
 		errs() << "[label=\"" << n->getCode() << "\"];";
 		errs() << "\n";
 	}
@@ -16,6 +27,7 @@ namespace {
 void GraphvizWriter::writeOctopusGraph(OctopusGraph &octopus_graph)
 {
 	// write header
+	writeHeader();
 	// write all the file nodes
 	// write all the location nodes
 	// write all the cfg entry/ cfg exit nodes
@@ -25,5 +37,6 @@ void GraphvizWriter::writeOctopusGraph(OctopusGraph &octopus_graph)
 	}
 	// get unique edges, write all the edges
 	// write footer
+	writeFooter();
 }
 
