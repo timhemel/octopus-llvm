@@ -1,7 +1,7 @@
 
 namespace GraphvizWriter {
 
-	void writeOctopusGraph(OctopusGraph::OctopusGraph &octopus_graph);
+	void writeOctopusGraph(Octopus::OctopusGraph &octopus_graph);
 
 }
 
