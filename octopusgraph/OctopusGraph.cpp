@@ -83,8 +83,6 @@ namespace Octopus {
 		}
 	}
 
-
-
 	Edge::Edge(std::string label, Node *source_node, Node *destination_node) : label(label), source_node(source_node), destination_node(destination_node)
 	{
 		// errs() << "edge " << source_node << " -[" << label << "]-> " << destination_node << "\n";
@@ -138,7 +136,6 @@ namespace Octopus {
 			} else {
 				int slot = octopus_graph.slot_tracker.getSlotIndex(op);
 				if (slot != 0) {
-					// ost << llvm_instruction->getOperand(i)->getType();
 					ost << '%' << slot;
 				} else {
 					ost << op;
