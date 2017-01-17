@@ -106,8 +106,6 @@ namespace Octopus {
 
 	bool InstructionNode::needsSlot()
 	{
-		// return true for branches ?
-		// for other instructions
 		return (!llvm_instruction->hasName() && !llvm_instruction->getType()->isVoidTy());
 	}
 
