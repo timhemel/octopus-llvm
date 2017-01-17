@@ -8,7 +8,7 @@ namespace {
 	void writeNode(Node *n)
 	{
 		errs() << "v" << (size_t) n;
-		errs() << "[label=\"" << n->getCode() << "];";
+		errs() << "[label=\"" << n->getCode() << "\"];";
 		errs() << "\n";
 	}
 }
