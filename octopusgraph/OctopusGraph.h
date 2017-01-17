@@ -12,8 +12,15 @@ namespace OctopusGraph {
 		void createAndConnectInstructionNodesForBasicBlock(BasicBlock &B);
 		void linkBasicBlock(BasicBlock &B);
 
-		void createInstructionNode(Instruction &I);
-		void linkInstructionWithPredecessor(Instruction *prev_instruction, Instruction &current_instruction);
+		void createInstructionNode(Instruction *instruction);
+		void linkInstructionWithPredecessor(Instruction *previous_instruction, Instruction *current_instruction);
 	};
+
+
+	class InstructionNode {
+	public:
+		InstructionNode(Instruction *instruction);
+	};
+
 }
 
