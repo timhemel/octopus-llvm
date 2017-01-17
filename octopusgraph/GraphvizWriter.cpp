@@ -4,6 +4,15 @@
 
 using namespace Octopus;
 
+namespace {
+	void writeNode(Node *n)
+	{
+		errs() << "v" << (size_t) n;
+		errs() << "[label=\"" << n->getCode() << "];";
+		errs() << "\n";
+	}
+}
+
 void GraphvizWriter::writeOctopusGraph(OctopusGraph &octopus_graph)
 {
 	// write header
@@ -12,8 +21,7 @@ void GraphvizWriter::writeOctopusGraph(OctopusGraph &octopus_graph)
 	// write all the cfg entry/ cfg exit nodes
 	// write all the instruction nodes
 	for(OctopusGraph::node_iterator n = octopus_graph.node_begin(), ne = octopus_graph.node_end(); n != ne; ++n) {
-		errs() << *n << "\n";
-		// write node
+		writeNode(*n);
 	}
 	// get unique edges, write all the edges
 	// write footer

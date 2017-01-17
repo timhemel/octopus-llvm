@@ -1,6 +1,7 @@
 #include <map>
 #include <list>
 #include <set>
+#include <string>
 #include "llvm/IR/Function.h"
 
 using namespace llvm;
@@ -8,6 +9,8 @@ using namespace llvm;
 namespace Octopus {
 
 	class Node {
+	public:
+		virtual std::string getCode() = 0;
 	};
 
 	struct Edge {
@@ -30,6 +33,10 @@ namespace Octopus {
 	class InstructionNode : public Node {
 	public:
 		InstructionNode(Instruction *instruction);
+		virtual std::string getCode();
+	private:
+		Instruction *llvm_instruction;
+		std::string code;
 	};
 
 	// lookup tables for Instruction -> InstructionNode

@@ -1,4 +1,6 @@
+#include <sstream>
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/IR/ModuleSlotTracker.h"
 #include "OctopusGraph.h"
 
 namespace Octopus {
@@ -69,7 +71,34 @@ namespace Octopus {
 
 	InstructionNode::InstructionNode(Instruction *instruction)
 	{
+		llvm_instruction = instruction;
 		instruction->dump();
+	}
+
+	std::string InstructionNode::getCode()
+	{
+		llvm_instruction->print(errs());
+		errs() << "\n";
+
+		ModuleSlotTracker MST(llvm_instruction->getModule(),true);
+		errs() << "module " << llvm_instruction->getModule() << "\n";
+		// MST.getMachine();//->initialize();
+
+		std::ostringstream ost;
+		if (llvm_instruction->hasName()) {
+			ost << '%' << llvm_instruction->getName().str() << " = ";
+		} else if (!llvm_instruction->getType()->isVoidTy()) {
+			ost << '%' << MST.getLocalSlot(llvm_instruction) << " = ";
+		}
+		ost << llvm_instruction->getOpcodeName();
+		return ost.str();
+		
+		// AssemblyAnnotationWriter aw;
+		// aw.emitInstructionAnnot(llvm_instruction, errs());
+		// this is more or less a re-implementation of
+		// AssemblyWriter::printInstruction
+		//
+		// to get slot, use Machine object
 	}
 
 }
