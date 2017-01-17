@@ -20,7 +20,7 @@ namespace {
 
 	private:
 
-		OctopusGraph::OctopusGraph octopus_graph;
+		Octopus::OctopusGraph octopus_graph;
 
 	};
 }

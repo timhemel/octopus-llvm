@@ -1,7 +1,7 @@
 #include "llvm/Support/raw_ostream.h"
 #include "OctopusGraph.h"
 
-namespace OctopusGraph {
+namespace Octopus {
 
 	void OctopusGraph::createEntryAndExitNodesForFunction(Function &F)
 	{
@@ -22,17 +22,29 @@ namespace OctopusGraph {
 	{
 	}
 
+	OctopusGraph::node_iterator OctopusGraph::node_begin()
+	{
+		return nodes.begin();
+	}
+
+	OctopusGraph::node_iterator OctopusGraph::node_end()
+	{
+		return nodes.end();
+	}
+
+
 	InstructionNode* OctopusGraph::createInstructionNode(Instruction *instruction)
 	{
 		InstructionNode *instruction_node = instruction_map[instruction];
 		if (instruction_node == 0) {
 			errs() << "instruction node for " << instruction << " does NOT exist!\n";
 			instruction_node = new InstructionNode(instruction);
+			nodes.push_back(instruction_node);
 			instruction_map[instruction] = instruction_node;
 		} else {
 			errs() << "instruction node for " << instruction << " exists!\n";
 		}
-		errs() << "instruction " << instruction << "\n";
+		// errs() << "instruction " << instruction << "\n";
 		return instruction_node;
 	}
 
@@ -47,7 +59,7 @@ namespace OctopusGraph {
 	void OctopusGraph::createEdge(std::string label, Node *source_node, Node *destination_node)
 	{
 		Edge edge(label, source_node, destination_node);
-		edges.push_back(edge);
+		edges.insert(edge);
 	}
 
 	Edge::Edge(std::string label, Node *source_node, Node *destination_node) : label(label), source_node(source_node), destination_node(destination_node)
