@@ -10,6 +10,8 @@ using namespace llvm;
 
 namespace Octopus {
 
+	class OctopusGraph;
+
 	class Node {
 	public:
 		virtual std::string getCode() = 0;
@@ -34,22 +36,39 @@ namespace Octopus {
 
 	class InstructionNode : public Node {
 	public:
-		InstructionNode(Instruction *instruction);
+		InstructionNode(OctopusGraph &ograph, Instruction *instruction);
 		virtual std::string getCode();
+		Instruction *getLLVMInstruction() { return llvm_instruction; }
+		virtual bool needsSlot();
+
 	protected:
 
 		virtual void renderLHS(std::ostream &ost);
 		virtual void renderOpcode(std::ostream &ost);
 		virtual void renderOperands(std::ostream &ost);
 	private:
+		OctopusGraph &octopus_graph;
 		Instruction *llvm_instruction;
 		std::string code;
+	};
+
+	class SlotTracker {
+	public:
+		SlotTracker() : slot_count(1) {}
+		void add(Value *v) { slot_map[v] = slot_count++; }
+		int getSlotIndex(Value *v) { return slot_map[v]; }
+		void reset() { slot_count = 1; }
+	private:
+		int slot_count;
+		std::map<Value *,int> slot_map;
 	};
 
 	// lookup tables for Instruction -> InstructionNode
 	// lookup tables for DIInfo -> LocationNode
 	class OctopusGraph {
 	public:
+		void initializeFunction();
+		void finalizeFunction();
 		void createEntryAndExitNodesForFunction(Function &F);
 		void createAndConnectInstructionNodesForBasicBlock(BasicBlock &B);
 		void linkBasicBlock(BasicBlock &B);
@@ -58,11 +77,14 @@ namespace Octopus {
 		node_iterator node_begin();
 		node_iterator node_end();
 
+		SlotTracker slot_tracker;
+
 	private:
 		InstructionNode* createInstructionNode(Instruction *instruction);
 		void linkInstructionWithPredecessor(Instruction *previous_instruction, Instruction *current_instruction);
 
 		void createEdge(std::string label, Node *source_node, Node *destination_node);
+		void updateSlotMap(InstructionNode *instruction);
 
 		std::map<Instruction *,InstructionNode *> instruction_map;
 		std::list<Node*> nodes;

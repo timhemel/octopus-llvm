@@ -4,6 +4,16 @@
 
 namespace Octopus {
 
+	void OctopusGraph::initializeFunction()
+	{
+		slot_tracker.reset();
+	}
+
+	void OctopusGraph::finalizeFunction()
+	{
+	}
+
+
 	void OctopusGraph::createEntryAndExitNodesForFunction(Function &F)
 	{
 	}
@@ -40,10 +50,10 @@ namespace Octopus {
 		if (instruction_node == 0) {
 			errs() << "instruction node for " << instruction << " does NOT exist!\n";
 			// TODO: replace with factory method
-			instruction_node = new InstructionNode(instruction);
+			instruction_node = new InstructionNode(*this,instruction);
 			nodes.push_back(instruction_node);
 			instruction_map[instruction] = instruction_node;
-			// TODO: update slot map
+			updateSlotMap(instruction_node);
 		} else {
 			errs() << "instruction node for " << instruction << " exists!\n";
 		}
@@ -65,12 +75,21 @@ namespace Octopus {
 		edges.insert(edge);
 	}
 
+	void OctopusGraph::updateSlotMap(InstructionNode *instruction_node)
+	{
+		if (instruction_node->needsSlot()) {
+			slot_tracker.add(instruction_node->getLLVMInstruction());
+		}
+	}
+
+
+
 	Edge::Edge(std::string label, Node *source_node, Node *destination_node) : label(label), source_node(source_node), destination_node(destination_node)
 	{
 		errs() << "edge " << source_node << " -[" << label << "]-> " << destination_node << "\n";
 	}
 
-	InstructionNode::InstructionNode(Instruction *instruction)
+	InstructionNode::InstructionNode(OctopusGraph &ograph, Instruction *instruction) : octopus_graph(ograph)
 	{
 		llvm_instruction = instruction;
 		instruction->dump();
@@ -81,10 +100,6 @@ namespace Octopus {
 		llvm_instruction->print(errs());
 		errs() << "\n";
 
-		// ModuleSlotTracker MST(llvm_instruction->getModule(),true);
-		errs() << "module " << llvm_instruction->getModule() << "\n";
-		// MST.getMachine();//->initialize();
-
 		std::ostringstream ost;
 
 		renderLHS(ost);
@@ -92,13 +107,13 @@ namespace Octopus {
 		renderOperands(ost);
 
 		return ost.str();
-		
-		// AssemblyAnnotationWriter aw;
-		// aw.emitInstructionAnnot(llvm_instruction, errs());
-		// this is more or less a re-implementation of
-		// AssemblyWriter::printInstruction
-		//
-		// to get slot, use Machine object
+	}
+
+	bool InstructionNode::needsSlot()
+	{
+		// return true for branches ?
+		// for other instructions
+		return (!llvm_instruction->hasName() && !llvm_instruction->getType()->isVoidTy());
 	}
 
 	void InstructionNode::renderLHS(std::ostream &ost)
@@ -106,20 +121,28 @@ namespace Octopus {
 		if (llvm_instruction->hasName()) {
 			ost << '%' << llvm_instruction->getName().str() << " = ";
 		} else if (!llvm_instruction->getType()->isVoidTy()) {
-			// ost << '%' << mst->getLocalSlot(llvm_instruction) << " = ";
+			int slot = octopus_graph.slot_tracker.getSlotIndex(llvm_instruction);
+			ost << '%' << slot << " = ";
 		}
 	}
 
 	void InstructionNode::renderOpcode(std::ostream &ost)
 	{
-		ost << llvm_instruction->getOpcodeName();
+		ost << llvm_instruction->getOpcodeName() << ' ';
 	}
 
 	void InstructionNode::renderOperands(std::ostream &ost)
 	{
 		for (unsigned i=0, E = llvm_instruction->getNumOperands(); i != E; ++i) {
 			if (i) ost << ", ";
-			ost << llvm_instruction->getOperand(i)->getType();
+			Value *op = llvm_instruction->getOperand(i);
+			if (op->hasName()) {
+				ost << '%' << op->getName().str();
+			} else {
+				int slot = octopus_graph.slot_tracker.getSlotIndex(op);
+				// ost << llvm_instruction->getOperand(i)->getType();
+				ost << '%' << slot;
+			}
 		}
 	}
 

@@ -38,6 +38,7 @@ OctopusGraphPass::OctopusGraphPass() : FunctionPass(ID)
 bool OctopusGraphPass::runOnFunction(Function &F)
 {
 	// create CFGEntry and CFGExit nodes
+	octopus_graph.initializeFunction();
 	octopus_graph.createEntryAndExitNodesForFunction(F);
 	for(Function::iterator b = F.begin(), be = F.end(); b != be; ++b) {
 		// create all instruction nodes and link them
@@ -45,6 +46,7 @@ bool OctopusGraphPass::runOnFunction(Function &F)
 		// link basic block with predecessors and successors?
 		octopus_graph.linkBasicBlock(*b);
 	}
+	octopus_graph.finalizeFunction();
 	return false;
 }
 
