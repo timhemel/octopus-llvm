@@ -4,7 +4,6 @@
 #include <string>
 #include <ostream>
 #include "llvm/IR/Function.h"
-#include "llvm/IR/ModuleSlotTracker.h"
 
 using namespace llvm;
 
