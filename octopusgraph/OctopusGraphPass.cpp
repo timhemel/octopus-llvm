@@ -3,11 +3,14 @@
 #include "llvm/IR/Function.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
+#include "llvm/Support/CommandLine.h"
 
 #include "OctopusGraph.h"
 #include "GraphvizWriter.h"
 
 using namespace llvm;
+
+static cl::opt<bool> OutputGraphviz("graphviz", cl::desc("Write graph in graphviz format"));
 
 namespace {
 	struct OctopusGraphPass : public FunctionPass {
@@ -15,7 +18,7 @@ namespace {
 
 		OctopusGraphPass();
 
-		virtual bool runOnFunction(Function &F);
+		virtual bool runOnFunction(Function &F) override;
 
 		virtual bool doInitialization(Module &M);
 		virtual bool doFinalization(Module &M);
@@ -59,8 +62,10 @@ bool OctopusGraphPass::doInitialization(Module &M)
 
 bool OctopusGraphPass::doFinalization(Module &M)
 {
-	GraphWriter::GraphvizWriter w(std::cout);
-	w.writeOctopusGraph(octopus_graph);
+	if (OutputGraphviz) {
+		GraphWriter::GraphvizWriter w(std::cout);
+		w.writeOctopusGraph(octopus_graph);
+	}
 	return false;
 }
 
