@@ -43,6 +43,8 @@ bool OctopusGraphPass::runOnFunction(Function &F)
 		octopus_graph.addBlockLabel(*b);
 		// create all instruction nodes and link them
 		octopus_graph.createAndConnectInstructionNodesForBasicBlock(*b);
+	}
+	for(Function::iterator b = F.begin(), be = F.end(); b != be; ++b) {
 		// link basic block with predecessors and successors?
 		octopus_graph.linkBasicBlock(*b);
 	}
