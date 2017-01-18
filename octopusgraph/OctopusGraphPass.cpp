@@ -4,8 +4,6 @@
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 
-#include "llvm/IR/ModuleSlotTracker.h"
-
 #include "OctopusGraph.h"
 #include "GraphvizWriter.h"
 
