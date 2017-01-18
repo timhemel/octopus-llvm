@@ -43,6 +43,14 @@ namespace Octopus {
 		Function *function;
 	};
 
+	class CFGExitNode : public Node {
+	public:
+		CFGExitNode(Function *F) : function(F) { }
+		virtual std::string getCode() { return "EXIT"; }
+	private:
+		Function *function;
+	};
+
 	class InstructionNode : public Node {
 	public:
 		InstructionNode(OctopusGraph &ograph, Instruction *instruction);
@@ -103,6 +111,7 @@ namespace Octopus {
 
 		std::map<Instruction *,InstructionNode *> instruction_map;
 		std::map<Function *,CFGEntryNode *> entry_nodes_map;
+		std::map<Function *,CFGExitNode *> exit_nodes_map;
 		std::list<Node*> nodes;
 		std::set<Edge,edge_compare> edges;
 	};

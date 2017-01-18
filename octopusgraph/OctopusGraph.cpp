@@ -20,6 +20,10 @@ namespace Octopus {
 		CFGEntryNode *cfg_entry_node = new CFGEntryNode(&F);
 		entry_nodes_map[&F] = cfg_entry_node;
 		nodes.push_back(cfg_entry_node);
+
+		CFGExitNode *cfg_exit_node = new CFGExitNode(&F);
+		exit_nodes_map[&F] = cfg_exit_node;
+		nodes.push_back(cfg_exit_node);
 	}
 
 	void OctopusGraph::addBlockLabel(BasicBlock &B)
@@ -43,13 +47,18 @@ namespace Octopus {
 		if (pred_begin(&B) == pred_end(&B)) {
 			CFGEntryNode *source_node = entry_nodes_map[B.getParent()];
 			InstructionNode *destination_node = createInstructionNode(&B.front());
-			createEdge("FLOWS_TO",source_node,destination_node);
+			createEdge("BB_TO",source_node,destination_node);
 		}
 		for (pred_iterator PI = pred_begin(&B), E = pred_end(&B); PI != E; ++PI) {
 			BasicBlock &Pred = **PI;
 			linkBasicBlockInstructions(Pred,B);
 		}
 		// if no successors, link with CFGExit
+		if (succ_begin(&B) == succ_end(&B)) {
+			InstructionNode *source_node = createInstructionNode(&B.back());
+			CFGExitNode *destination_node = exit_nodes_map[B.getParent()];
+			createEdge("BB_TO",source_node,destination_node);
+		}
 		for (succ_iterator PI = succ_begin(&B), E = succ_end(&B); PI != E; ++PI) {
 			BasicBlock &Succ = **PI;
 			linkBasicBlockInstructions(B,Succ);
@@ -60,7 +69,7 @@ namespace Octopus {
 	{
 		InstructionNode *source_instruction_node = createInstructionNode(&source_block.back());
 		InstructionNode *destination_instruction_node = createInstructionNode(&destination_block.front());
-		createEdge("FLOWS_TO",source_instruction_node,destination_instruction_node);
+		createEdge("BB_TO",source_instruction_node,destination_instruction_node);
 	}
 
 	OctopusGraph::node_iterator OctopusGraph::node_begin()
