@@ -36,11 +36,11 @@ namespace Octopus {
 	public:
 		SlotTracker() : slot_count(0) {}
 		void add(Value *v) { slot_map[v] = slot_count++; }
-		int getSlotIndex(Value *v) { return slot_map[v]; }
+		int getSlotIndex(const Value *v) { return slot_map[v]; }
 		void reset() { slot_count = 0; }
 	private:
 		int slot_count;
-		std::map<Value *,int> slot_map;
+		std::map<const Value *,int> slot_map;
 	};
 
 	// lookup tables for Instruction -> InstructionNode

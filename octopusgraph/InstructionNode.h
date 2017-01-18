@@ -24,11 +24,13 @@ namespace Octopus {
 		virtual void renderOpcode(std::ostream &ost);
 		virtual void renderOperands(std::ostream &ost);
 	private:
+		void renderOperand(std::ostream &ost, const Value *operand);
+		void renderConstant(std::ostream &ost, const Constant *operand);
+
 		OctopusGraph &octopus_graph;
 		Instruction *llvm_instruction;
 		std::string code;
 	};
-
 
 }
 
