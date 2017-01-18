@@ -26,11 +26,12 @@ namespace Octopus {
 
 	struct edge_compare {
 		bool operator()(const Edge& e1, const Edge& e2) const {
-			return e1.label == e2.label
+			bool b = e1.label == e2.label
 				? ( e1.source_node == e2.source_node
-					? e1.destination_node < e1.destination_node
+					? e1.destination_node < e2.destination_node
 					: e1.source_node < e2.source_node )
 				: e1.label < e2.label;
+			return b;
 		}
 	};
 
