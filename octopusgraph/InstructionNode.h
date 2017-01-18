@@ -18,18 +18,10 @@ namespace Octopus {
 		Instruction *getLLVMInstruction() { return llvm_instruction; }
 		virtual bool needsSlot();
 
-	protected:
-
-		virtual void renderLHS(std::ostream &ost);
-		virtual void renderOpcode(std::ostream &ost);
-		virtual void renderOperands(std::ostream &ost);
 	private:
-		void renderOperand(std::ostream &ost, const Value *operand);
-		void renderConstant(std::ostream &ost, const Constant *operand);
 
 		OctopusGraph &octopus_graph;
 		Instruction *llvm_instruction;
-		std::string code;
 	};
 
 }
