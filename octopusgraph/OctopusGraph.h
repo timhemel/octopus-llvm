@@ -78,6 +78,10 @@ namespace Octopus {
 		node_iterator node_begin();
 		node_iterator node_end();
 
+		typedef std::set<Edge,edge_compare>::iterator edge_iterator;
+		edge_iterator edge_begin();
+		edge_iterator edge_end();
+
 		SlotTracker slot_tracker;
 
 	private:

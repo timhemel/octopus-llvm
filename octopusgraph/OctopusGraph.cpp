@@ -48,6 +48,16 @@ namespace Octopus {
 		return nodes.end();
 	}
 
+	OctopusGraph::edge_iterator OctopusGraph::edge_begin()
+	{
+		return edges.begin();
+	}
+
+	OctopusGraph::edge_iterator OctopusGraph::edge_end()
+	{
+		return edges.end();
+	}
+
 
 	InstructionNode* OctopusGraph::createInstructionNode(Instruction *instruction)
 	{
