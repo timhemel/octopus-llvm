@@ -49,16 +49,9 @@ namespace GraphWriter{
 
 	void GraphvizWriter::writeOctopusGraph(OctopusGraph &octopus_graph)
 	{
-		// write header
 		writeHeader();
-		// write all the file nodes
-		// write all the location nodes
-		// write all the cfg entry/ cfg exit nodes
-		// write all the instruction nodes
 		writeNodes(octopus_graph);
-		// get unique edges, write all the edges
 		writeEdges(octopus_graph);
-		// write footer
 		writeFooter();
 	}
 

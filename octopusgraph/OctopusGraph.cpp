@@ -95,7 +95,6 @@ namespace Octopus {
 
 	Edge::Edge(std::string label, Node *source_node, Node *destination_node) : label(label), source_node(source_node), destination_node(destination_node)
 	{
-		// errs() << "edge " << source_node << " -[" << label << "]-> " << destination_node << "\n";
 	}
 
 	InstructionNode::InstructionNode(OctopusGraph &ograph, Instruction *instruction) : octopus_graph(ograph)
