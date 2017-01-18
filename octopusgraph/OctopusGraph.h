@@ -7,17 +7,12 @@
 #include <string>
 #include <ostream>
 #include "llvm/IR/Function.h"
+#include "OctopusNode.h"
+#include "InstructionNode.h"
 
 using namespace llvm;
 
 namespace Octopus {
-
-	class OctopusGraph;
-
-	class Node {
-	public:
-		virtual std::string getCode() = 0;
-	};
 
 	struct Edge {
 		Edge(std::string label, Node *source_node, Node *destination_node);
@@ -35,40 +30,6 @@ namespace Octopus {
 				: e1.label < e2.label;
 			return b;
 		}
-	};
-
-	class CFGEntryNode : public Node {
-	public:
-		CFGEntryNode(Function *F) : function(F) { }
-		virtual std::string getCode() { return "ENTRY"; }
-	private:
-		Function *function;
-	};
-
-	class CFGExitNode : public Node {
-	public:
-		CFGExitNode(Function *F) : function(F) { }
-		virtual std::string getCode() { return "EXIT"; }
-	private:
-		Function *function;
-	};
-
-	class InstructionNode : public Node {
-	public:
-		InstructionNode(OctopusGraph &ograph, Instruction *instruction);
-		virtual std::string getCode();
-		Instruction *getLLVMInstruction() { return llvm_instruction; }
-		virtual bool needsSlot();
-
-	protected:
-
-		virtual void renderLHS(std::ostream &ost);
-		virtual void renderOpcode(std::ostream &ost);
-		virtual void renderOperands(std::ostream &ost);
-	private:
-		OctopusGraph &octopus_graph;
-		Instruction *llvm_instruction;
-		std::string code;
 	};
 
 	class SlotTracker {
@@ -104,7 +65,8 @@ namespace Octopus {
 		SlotTracker slot_tracker;
 
 	private:
-		InstructionNode* createInstructionNode(Instruction *instruction);
+		InstructionNode* findOrCreateInstructionNode(Instruction *instruction);
+		InstructionNode *createInstructionNode(Instruction *instruction);
 		void linkInstructionWithPredecessor(Instruction *previous_instruction, Instruction *current_instruction);
 		void linkBasicBlockInstructions(BasicBlock &source_block, BasicBlock &destination_block);
 

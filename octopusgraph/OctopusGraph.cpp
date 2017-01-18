@@ -1,4 +1,3 @@
-#include <sstream>
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/IR/CFG.h"
 #include "OctopusGraph.h"
@@ -36,7 +35,7 @@ namespace Octopus {
 		Instruction *prev_instruction = 0;
 		for(BasicBlock::iterator i = B.begin(), ie = B.end(); i != ie; ++i) {
 			Instruction *current_instruction = dyn_cast<Instruction>(&*i);
-			createInstructionNode(current_instruction);
+			findOrCreateInstructionNode(current_instruction);
 			linkInstructionWithPredecessor(prev_instruction,current_instruction);
 			prev_instruction = current_instruction;
 		}
@@ -46,7 +45,7 @@ namespace Octopus {
 	{
 		if (pred_begin(&B) == pred_end(&B)) {
 			CFGEntryNode *source_node = entry_nodes_map[B.getParent()];
-			InstructionNode *destination_node = createInstructionNode(&B.front());
+			InstructionNode *destination_node = findOrCreateInstructionNode(&B.front());
 			createEdge("BB_TO",source_node,destination_node);
 		}
 		for (pred_iterator PI = pred_begin(&B), E = pred_end(&B); PI != E; ++PI) {
@@ -55,7 +54,7 @@ namespace Octopus {
 		}
 		// if no successors, link with CFGExit
 		if (succ_begin(&B) == succ_end(&B)) {
-			InstructionNode *source_node = createInstructionNode(&B.back());
+			InstructionNode *source_node = findOrCreateInstructionNode(&B.back());
 			CFGExitNode *destination_node = exit_nodes_map[B.getParent()];
 			createEdge("BB_TO",source_node,destination_node);
 		}
@@ -67,8 +66,8 @@ namespace Octopus {
 
 	void OctopusGraph::linkBasicBlockInstructions(BasicBlock &source_block, BasicBlock &destination_block)
 	{
-		InstructionNode *source_instruction_node = createInstructionNode(&source_block.back());
-		InstructionNode *destination_instruction_node = createInstructionNode(&destination_block.front());
+		InstructionNode *source_instruction_node = findOrCreateInstructionNode(&source_block.back());
+		InstructionNode *destination_instruction_node = findOrCreateInstructionNode(&destination_block.front());
 		createEdge("BB_TO",source_instruction_node,destination_instruction_node);
 	}
 
@@ -93,12 +92,11 @@ namespace Octopus {
 	}
 
 
-	InstructionNode* OctopusGraph::createInstructionNode(Instruction *instruction)
+	InstructionNode* OctopusGraph::findOrCreateInstructionNode(Instruction *instruction)
 	{
 		InstructionNode *instruction_node = instruction_map[instruction];
 		if (instruction_node == 0) {
-			// TODO: replace with factory method
-			instruction_node = new InstructionNode(*this,instruction);
+			instruction_node = createInstructionNode(instruction);
 			nodes.push_back(instruction_node);
 			instruction_map[instruction] = instruction_node;
 			updateSlotMap(instruction_node);
@@ -109,8 +107,8 @@ namespace Octopus {
 	void OctopusGraph::linkInstructionWithPredecessor(Instruction *previous_instruction, Instruction *current_instruction)
 	{
 		if (previous_instruction == 0) return;
-		InstructionNode *previous_instruction_node = createInstructionNode(previous_instruction);
-		InstructionNode *current_instruction_node = createInstructionNode(current_instruction);
+		InstructionNode *previous_instruction_node = findOrCreateInstructionNode(previous_instruction);
+		InstructionNode *current_instruction_node = findOrCreateInstructionNode(current_instruction);
 		createEdge("FLOWS_TO",previous_instruction_node,current_instruction_node);
 	}
 
@@ -127,62 +125,13 @@ namespace Octopus {
 		}
 	}
 
+	InstructionNode *OctopusGraph::createInstructionNode(Instruction *instruction)
+	{
+		return new InstructionNode(*this,instruction);
+	}
+
 	Edge::Edge(std::string label, Node *source_node, Node *destination_node) : label(label), source_node(source_node), destination_node(destination_node)
 	{
-	}
-
-	InstructionNode::InstructionNode(OctopusGraph &ograph, Instruction *instruction) : octopus_graph(ograph)
-	{
-		llvm_instruction = instruction;
-	}
-
-	std::string InstructionNode::getCode()
-	{
-		std::ostringstream ost;
-
-		renderLHS(ost);
-		renderOpcode(ost);
-		renderOperands(ost);
-
-		return ost.str();
-	}
-
-	bool InstructionNode::needsSlot()
-	{
-		return (!llvm_instruction->hasName() && !llvm_instruction->getType()->isVoidTy());
-	}
-
-	void InstructionNode::renderLHS(std::ostream &ost)
-	{
-		if (llvm_instruction->hasName()) {
-			ost << '%' << llvm_instruction->getName().str() << " = ";
-		} else if (!llvm_instruction->getType()->isVoidTy()) {
-			int slot = octopus_graph.slot_tracker.getSlotIndex(llvm_instruction);
-			ost << '%' << slot << " = ";
-		}
-	}
-
-	void InstructionNode::renderOpcode(std::ostream &ost)
-	{
-		ost << llvm_instruction->getOpcodeName() << ' ';
-	}
-
-	void InstructionNode::renderOperands(std::ostream &ost)
-	{
-		for (unsigned i=0, E = llvm_instruction->getNumOperands(); i != E; ++i) {
-			if (i) ost << ", ";
-			Value *op = llvm_instruction->getOperand(i);
-			if (op->hasName()) {
-				ost << '%' << op->getName().str();
-			} else {
-				int slot = octopus_graph.slot_tracker.getSlotIndex(op);
-				if (slot != 0) {
-					ost << '%' << slot;
-				} else {
-					ost << op;
-				}
-			}
-		}
 	}
 
 }
