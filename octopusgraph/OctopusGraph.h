@@ -1,3 +1,6 @@
+#ifndef OCTOPUS_GRAPH_H
+#define OCTOPUS_GRAPH_H
+
 #include <map>
 #include <list>
 #include <set>
@@ -117,3 +120,4 @@ namespace Octopus {
 
 }
 
+#endif

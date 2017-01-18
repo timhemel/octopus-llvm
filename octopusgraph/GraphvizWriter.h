@@ -1,3 +1,6 @@
+#ifndef GRAPHVIZ_WRITER_H
+#define GRAPHVIZ_WRITER_H
+
 #include <ostream>
 
 namespace GraphWriter {
@@ -20,3 +23,4 @@ namespace GraphWriter {
 
 }
 
+#endif
