@@ -1,5 +1,6 @@
 #include <sstream>
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/IR/CFG.h"
 #include "OctopusGraph.h"
 
 namespace Octopus {
@@ -36,6 +37,23 @@ namespace Octopus {
 
 	void OctopusGraph::linkBasicBlock(BasicBlock &B)
 	{
+		// if no predecessors, link with CFGEntry
+		for (pred_iterator PI = pred_begin(&B), E = pred_end(&B); PI != E; ++PI) {
+			BasicBlock &Pred = **PI;
+			linkBasicBlockInstructions(Pred,B);
+		}
+		// if no successors, link with CFGExit
+		for (succ_iterator PI = succ_begin(&B), E = succ_end(&B); PI != E; ++PI) {
+			BasicBlock &Succ = **PI;
+			linkBasicBlockInstructions(B,Succ);
+		}
+	}
+
+	void OctopusGraph::linkBasicBlockInstructions(BasicBlock &source_block, BasicBlock &destination_block)
+	{
+		InstructionNode *source_instruction_node = createInstructionNode(&source_block.back());
+		InstructionNode *destination_instruction_node = createInstructionNode(&destination_block.front());
+		createEdge("FLOWS_TO",source_instruction_node,destination_instruction_node);
 	}
 
 	OctopusGraph::node_iterator OctopusGraph::node_begin()

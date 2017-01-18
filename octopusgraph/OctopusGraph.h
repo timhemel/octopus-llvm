@@ -87,6 +87,7 @@ namespace Octopus {
 	private:
 		InstructionNode* createInstructionNode(Instruction *instruction);
 		void linkInstructionWithPredecessor(Instruction *previous_instruction, Instruction *current_instruction);
+		void linkBasicBlockInstructions(BasicBlock &source_block, BasicBlock &destination_block);
 
 		void createEdge(std::string label, Node *source_node, Node *destination_node);
 		void updateSlotMap(InstructionNode *instruction);
