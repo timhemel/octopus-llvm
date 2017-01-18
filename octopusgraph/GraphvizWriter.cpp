@@ -4,63 +4,62 @@
 
 using namespace Octopus;
 
-namespace {
+namespace GraphWriter{
 
-	void writeHeader()
+	void GraphvizWriter::writeHeader()
 	{
-		errs() << "digraph G {\n";
+		ost << "digraph G {\n";
 	}
 
-	void writeFooter()
+	void GraphvizWriter::writeFooter()
 	{
-		errs() << "}\n";
+		ost << "}\n";
 	}
 
-	void writeNode(Node *n)
+	void GraphvizWriter::writeNode(Node *n)
 	{
-		errs() << "\tv" << (size_t) n;
-		errs() << "[label=\"" << n->getCode() << "\"];";
-		errs() << "\n";
+		ost << "\tv" << (size_t) n;
+		ost << "[label=\"" << n->getCode() << "\"];";
+		ost << "\n";
 	}
 
-	void writeNodes(OctopusGraph &octopus_graph)
+	void GraphvizWriter::writeNodes(OctopusGraph &octopus_graph)
 	{
 		for(OctopusGraph::node_iterator n = octopus_graph.node_begin(), ne = octopus_graph.node_end(); n != ne; ++n) {
 			writeNode(*n);
 		}
 	}
 
-	void writeEdge(const Edge &e)
+	void GraphvizWriter::writeEdge(const Edge &e)
 	{
-		size_t source_id = (size_t) &e.source_node;
-		errs() << "\tv" << source_id;
-		errs() << " -> ";
-		size_t destination_id = (size_t) &e.destination_node;
-		errs() << destination_id;
-		errs() << " [label=" << e.label << "]\n";
+		size_t source_id = (size_t) e.source_node;
+		ost << "\tv" << source_id;
+		ost << " -> v";
+		size_t destination_id = (size_t) e.destination_node;
+		ost << destination_id;
+		ost << " [label=" << e.label << "]\n";
 	}
 
-	void writeEdges(OctopusGraph &octopus_graph)
+	void GraphvizWriter::writeEdges(OctopusGraph &octopus_graph)
 	{
 		for(OctopusGraph::edge_iterator e = octopus_graph.edge_begin(), ee = octopus_graph.edge_end(); e != ee; ++e) {
 			writeEdge(*e);
 		}
 	}
 
-}
+	void GraphvizWriter::writeOctopusGraph(OctopusGraph &octopus_graph)
+	{
+		// write header
+		writeHeader();
+		// write all the file nodes
+		// write all the location nodes
+		// write all the cfg entry/ cfg exit nodes
+		// write all the instruction nodes
+		writeNodes(octopus_graph);
+		// get unique edges, write all the edges
+		writeEdges(octopus_graph);
+		// write footer
+		writeFooter();
+	}
 
-void GraphvizWriter::writeOctopusGraph(OctopusGraph &octopus_graph)
-{
-	// write header
-	writeHeader();
-	// write all the file nodes
-	// write all the location nodes
-	// write all the cfg entry/ cfg exit nodes
-	// write all the instruction nodes
-	writeNodes(octopus_graph);
-	// get unique edges, write all the edges
-	writeEdges(octopus_graph);
-	// write footer
-	writeFooter();
 }
-

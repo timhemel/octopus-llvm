@@ -1,3 +1,4 @@
+#include <iostream>
 #include "llvm/Pass.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/LegacyPassManager.h"
@@ -58,7 +59,8 @@ bool OctopusGraphPass::doInitialization(Module &M)
 
 bool OctopusGraphPass::doFinalization(Module &M)
 {
-	GraphvizWriter::writeOctopusGraph(octopus_graph);
+	GraphWriter::GraphvizWriter w(std::cout);
+	w.writeOctopusGraph(octopus_graph);
 	return false;
 }
 
