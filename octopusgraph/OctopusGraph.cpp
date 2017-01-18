@@ -17,6 +17,9 @@ namespace Octopus {
 
 	void OctopusGraph::createEntryAndExitNodesForFunction(Function &F)
 	{
+		CFGEntryNode *cfg_entry_node = new CFGEntryNode(&F);
+		entry_nodes_map[&F] = cfg_entry_node;
+		nodes.push_back(cfg_entry_node);
 	}
 
 	void OctopusGraph::addBlockLabel(BasicBlock &B)
@@ -37,7 +40,11 @@ namespace Octopus {
 
 	void OctopusGraph::linkBasicBlock(BasicBlock &B)
 	{
-		// if no predecessors, link with CFGEntry
+		if (pred_begin(&B) == pred_end(&B)) {
+			CFGEntryNode *source_node = entry_nodes_map[B.getParent()];
+			InstructionNode *destination_node = createInstructionNode(&B.front());
+			createEdge("FLOWS_TO",source_node,destination_node);
+		}
 		for (pred_iterator PI = pred_begin(&B), E = pred_end(&B); PI != E; ++PI) {
 			BasicBlock &Pred = **PI;
 			linkBasicBlockInstructions(Pred,B);

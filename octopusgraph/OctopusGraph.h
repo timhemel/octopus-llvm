@@ -34,6 +34,14 @@ namespace Octopus {
 		}
 	};
 
+	class CFGEntryNode : public Node {
+	public:
+		CFGEntryNode(Function *F) : function(F) { }
+		virtual std::string getCode() { return "ENTRY"; }
+	private:
+		Function *function;
+	};
+
 	class InstructionNode : public Node {
 	public:
 		InstructionNode(OctopusGraph &ograph, Instruction *instruction);
@@ -93,6 +101,7 @@ namespace Octopus {
 		void updateSlotMap(InstructionNode *instruction);
 
 		std::map<Instruction *,InstructionNode *> instruction_map;
+		std::map<Function *,CFGEntryNode *> entry_nodes_map;
 		std::list<Node*> nodes;
 		std::set<Edge,edge_compare> edges;
 	};
