@@ -158,8 +158,9 @@ namespace Octopus {
 		if (llvm_instruction->hasMetadata()) {
 			MDNode *metadata = llvm_instruction->getMetadata("dbg");
 			DILocation *location = (DILocation *) metadata;
-			FileNode *filenode = findOrCreateFileNode(location);
+			FileNode *file_node = findOrCreateFileNode(location);
 			LocationNode *location_node = findOrCreateLocationNode(location);
+			createAndStoreEdge("IN_FILE",file_node,location_node);
 		}
 	}
 
