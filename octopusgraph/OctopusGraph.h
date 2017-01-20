@@ -80,10 +80,14 @@ namespace Octopus {
 
 		Edge *createAndStoreEdge(std::string label, Node *source_node, Node *destination_node);
 		void updateSlotMap(InstructionNode *instruction);
+		void storeLocationNode(InstructionNode *instruction);
+		FileNode* findOrCreateFileNode(DILocation *location);
+		LocationNode* findOrCreateLocationNode(DILocation *location);
 
 		std::map<const Instruction *,InstructionNode *> instruction_map;
 		std::map<Function *,CFGEntryNode *> entry_nodes_map;
 		std::map<Function *,CFGExitNode *> exit_nodes_map;
+		std::map<std::string,FileNode *> file_map;
 		std::list<Node*> nodes;
 		std::set<Edge *,edge_compare> edges;
 	};

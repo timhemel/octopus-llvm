@@ -28,6 +28,17 @@ namespace Octopus {
 	private:
 		Function *function;
 	};
+
+	class FileNode : public Node {
+	public:
+		FileNode(std::string fn) : filename(fn) { }
+		virtual std::string getCode() { return filename; }
+	private:
+		std::string filename;
+	};
+
+	class LocationNode : public Node {
+	};
 }
 
 #endif

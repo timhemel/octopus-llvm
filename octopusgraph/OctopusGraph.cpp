@@ -1,5 +1,6 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/IR/CFG.h"
+#include "llvm/IR/DebugInfoMetadata.h"
 #include "OctopusGraph.h"
 
 namespace Octopus {
@@ -123,6 +124,8 @@ namespace Octopus {
 			nodes.push_back(instruction_node);
 			instruction_map[instruction] = instruction_node;
 			updateSlotMap(instruction_node);
+			// create locnodes
+			storeLocationNode(instruction_node);
 		}
 		return instruction_node;
 	}
@@ -147,6 +150,29 @@ namespace Octopus {
 		if (instruction_node->needsSlot()) {
 			slot_tracker.add(instruction_node->getLLVMInstruction());
 		}
+	}
+
+	void OctopusGraph::storeLocationNode(InstructionNode *instruction)
+	{
+		Instruction *llvm_instruction = instruction->getLLVMInstruction();
+		if (llvm_instruction->hasMetadata()) {
+			MDNode *metadata = llvm_instruction->getMetadata("dbg");
+			DILocation *location = (DILocation *) metadata;
+			FileNode *filenode = findOrCreateFileNode(location);
+			// LocationNode *location_node = findOrCreateLocationNode(location);
+		}
+	}
+
+	FileNode* OctopusGraph::findOrCreateFileNode(DILocation *location)
+	{
+		// mapping of location to filenode
+		FileNode *file_node = file_map[location->getFilename().str()];
+		if (file_node == 0) {
+			file_node = new FileNode(location->getFilename().str());
+			nodes.push_back(file_node);
+			file_map[location->getFilename().str()] = file_node;
+		}
+		return file_node;
 	}
 
 	InstructionNode *OctopusGraph::createInstructionNode(Instruction *instruction)
