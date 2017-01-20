@@ -18,11 +18,5 @@ namespace Octopus {
 		return ost.str();
 	}
 
-	bool InstructionNode::needsSlot()
-	{
-		return (!llvm_instruction->hasName() && !llvm_instruction->getType()->isVoidTy());
-	}
-
-
 }
 

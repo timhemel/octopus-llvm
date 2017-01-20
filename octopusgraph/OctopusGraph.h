@@ -40,17 +40,6 @@ namespace Octopus {
 		}
 	};
 
-	class SlotTracker {
-	public:
-		SlotTracker() : slot_count(0) {}
-		void add(Value *v) { slot_map[v] = slot_count++; }
-		int getSlotIndex(const Value *v) { return slot_map[v]; }
-		void reset() { slot_count = 0; }
-	private:
-		int slot_count;
-		std::map<const Value *,int> slot_map;
-	};
-
 	// lookup tables for DIInfo -> LocationNode
 	class OctopusGraph {
 	public:
@@ -70,8 +59,6 @@ namespace Octopus {
 		edge_iterator edge_begin();
 		edge_iterator edge_end();
 
-		SlotTracker slot_tracker;
-
 	private:
 		InstructionNode* findOrCreateInstructionNode(Instruction *instruction);
 		InstructionNode *createInstructionNode(Instruction *instruction);
@@ -79,7 +66,6 @@ namespace Octopus {
 		void linkBasicBlockInstructions(BasicBlock &source_block, BasicBlock &destination_block);
 
 		Edge *createAndStoreEdge(std::string label, Node *source_node, Node *destination_node);
-		void updateSlotMap(InstructionNode *instruction);
 		LocationNode* findOrCreateLocationAndFileNodes(InstructionNode *instruction);
 		FileNode* findOrCreateFileNode(DILocation *location);
 		LocationNode* findOrCreateLocationNode(DILocation *location);

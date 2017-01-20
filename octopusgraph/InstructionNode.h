@@ -14,7 +14,6 @@ namespace Octopus {
 		InstructionNode(OctopusGraph &ograph, Instruction *instruction);
 		virtual std::string getCode();
 		Instruction *getLLVMInstruction() { return llvm_instruction; }
-		virtual bool needsSlot();
 		virtual bool isInstruction() { return true; }
 
 	private:
