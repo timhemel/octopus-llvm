@@ -124,8 +124,10 @@ namespace Octopus {
 			nodes.push_back(instruction_node);
 			instruction_map[instruction] = instruction_node;
 			updateSlotMap(instruction_node);
-			// create locnodes
-			storeLocationNode(instruction_node);
+			LocationNode *location_node = findOrCreateLocationAndFileNodes(instruction_node);
+			if (location_node != 0) {
+				createAndStoreEdge("LOCATED_AT",instruction_node,location_node);
+			}
 		}
 		return instruction_node;
 	}
@@ -152,7 +154,7 @@ namespace Octopus {
 		}
 	}
 
-	void OctopusGraph::storeLocationNode(InstructionNode *instruction)
+	LocationNode* OctopusGraph::findOrCreateLocationAndFileNodes(InstructionNode *instruction)
 	{
 		Instruction *llvm_instruction = instruction->getLLVMInstruction();
 		if (llvm_instruction->hasMetadata()) {
@@ -161,7 +163,9 @@ namespace Octopus {
 			FileNode *file_node = findOrCreateFileNode(location);
 			LocationNode *location_node = findOrCreateLocationNode(location);
 			createAndStoreEdge("IN_FILE",file_node,location_node);
+			return location_node;
 		}
+		return 0;
 	}
 
 	FileNode* OctopusGraph::findOrCreateFileNode(DILocation *location)
