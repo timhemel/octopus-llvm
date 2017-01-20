@@ -4,13 +4,11 @@
 #include <ostream>
 #include "llvm/IR/Function.h"
 #include "OctopusNode.h"
-// #include "OctopusGraph.h"
 
 namespace Octopus {
 
 	class OctopusGraph;
 
-	// base class for instruction nodes
 	class InstructionNode : public Node {
 	public:
 		InstructionNode(OctopusGraph &ograph, Instruction *instruction);

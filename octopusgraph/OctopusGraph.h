@@ -51,7 +51,6 @@ namespace Octopus {
 		std::map<const Value *,int> slot_map;
 	};
 
-	// lookup tables for Instruction -> InstructionNode
 	// lookup tables for DIInfo -> LocationNode
 	class OctopusGraph {
 	public:

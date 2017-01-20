@@ -52,7 +52,6 @@ namespace Octopus {
 			BasicBlock &Pred = **PI;
 			linkBasicBlockInstructions(Pred,B);
 		}
-		// if no successors, link with CFGExit
 		if (succ_begin(&B) == succ_end(&B)) {
 			InstructionNode *source_node = findOrCreateInstructionNode(&B.back());
 			CFGExitNode *destination_node = exit_nodes_map[B.getParent()];
@@ -82,7 +81,6 @@ namespace Octopus {
 		while (node != node_end()) {
 			InstructionNode *instruction_node = (InstructionNode *) *node;
 			Instruction *llvm_instruction = ((InstructionNode *) *node)->getLLVMInstruction();
-			// see if there is a data dependence (depends on instruction)
 			for(int operand_no = 0, E = llvm_instruction->getNumOperands(); operand_no != E; ++operand_no) {
 				const Value *operand = llvm_instruction->getOperand(operand_no);
 				if (isa<Instruction>(operand)) {
