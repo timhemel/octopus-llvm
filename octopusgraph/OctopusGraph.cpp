@@ -1,7 +1,9 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/IR/CFG.h"
 #include "llvm/IR/DebugInfoMetadata.h"
+#include "CommandLineOptions.h"
 #include "OctopusGraph.h"
+
 
 namespace Octopus {
 
@@ -124,9 +126,11 @@ namespace Octopus {
 			nodes.push_back(instruction_node);
 			instruction_map[instruction] = instruction_node;
 			updateSlotMap(instruction_node);
-			LocationNode *location_node = findOrCreateLocationAndFileNodes(instruction_node);
-			if (location_node != 0) {
-				createAndStoreEdge("LOCATED_AT",instruction_node,location_node);
+			if (!optionNoLocationNodesAndEdges) {
+				LocationNode *location_node = findOrCreateLocationAndFileNodes(instruction_node);
+				if (location_node != 0) {
+					createAndStoreEdge("LOCATED_AT",instruction_node,location_node);
+				}
 			}
 		}
 		return instruction_node;

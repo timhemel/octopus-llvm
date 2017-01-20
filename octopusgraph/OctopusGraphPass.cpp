@@ -3,15 +3,13 @@
 #include "llvm/IR/Function.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
-#include "llvm/Support/CommandLine.h"
 
+#include "CommandLineOptions.h"
 #include "OctopusGraph.h"
 #include "GraphvizWriter.h"
 
 using namespace llvm;
 
-static cl::opt<bool> OutputGraphviz("graphviz", cl::desc("Write graph in graphviz format"));
-static cl::opt<bool> NoDataDependenceEdges("noddg", cl::desc("Do not generate DDG edges"));
 
 namespace {
 	struct OctopusGraphPass : public FunctionPass {
@@ -49,7 +47,7 @@ bool OctopusGraphPass::runOnFunction(Function &F)
 	for(Function::iterator b = F.begin(), be = F.end(); b != be; ++b) {
 		octopus_graph.linkBasicBlock(*b);
 	}
-	if (!NoDataDependenceEdges) {
+	if (!optionNoDataDependenceEdges) {
 		octopus_graph.createDataDependenceEdges();
 	}
 	octopus_graph.finalizeFunction();
@@ -63,7 +61,7 @@ bool OctopusGraphPass::doInitialization(Module &M)
 
 bool OctopusGraphPass::doFinalization(Module &M)
 {
-	if (OutputGraphviz) {
+	if (optionOutputGraphviz) {
 		GraphWriter::GraphvizWriter w(std::cout);
 		w.writeOctopusGraph(octopus_graph);
 	}
