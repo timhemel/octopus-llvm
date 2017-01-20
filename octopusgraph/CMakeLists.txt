@@ -3,6 +3,7 @@ add_library(OctopusGraphPass MODULE
 	OctopusGraph.cpp
 	GraphvizWriter.cpp
 	InstructionNode.cpp
+	OctopusNode.cpp
 )
 
 target_compile_features(OctopusGraphPass PRIVATE cxx_range_for cxx_auto_type)

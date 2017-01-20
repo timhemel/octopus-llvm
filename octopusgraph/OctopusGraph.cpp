@@ -159,7 +159,7 @@ namespace Octopus {
 			MDNode *metadata = llvm_instruction->getMetadata("dbg");
 			DILocation *location = (DILocation *) metadata;
 			FileNode *filenode = findOrCreateFileNode(location);
-			// LocationNode *location_node = findOrCreateLocationNode(location);
+			LocationNode *location_node = findOrCreateLocationNode(location);
 		}
 	}
 
@@ -173,6 +173,17 @@ namespace Octopus {
 			file_map[location->getFilename().str()] = file_node;
 		}
 		return file_node;
+	}
+
+	LocationNode* OctopusGraph::findOrCreateLocationNode(DILocation *location)
+	{
+		LocationNode *location_node = location_map[location];
+		if (location_node == 0) {
+			location_node = new LocationNode(location);
+			nodes.push_back(location_node);
+			location_map[location] = location_node;
+		}
+		return location_node;
 	}
 
 	InstructionNode *OctopusGraph::createInstructionNode(Instruction *instruction)

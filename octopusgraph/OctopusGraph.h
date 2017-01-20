@@ -88,6 +88,7 @@ namespace Octopus {
 		std::map<Function *,CFGEntryNode *> entry_nodes_map;
 		std::map<Function *,CFGExitNode *> exit_nodes_map;
 		std::map<std::string,FileNode *> file_map;
+		std::map<DILocation*,LocationNode *> location_map;
 		std::list<Node*> nodes;
 		std::set<Edge *,edge_compare> edges;
 	};

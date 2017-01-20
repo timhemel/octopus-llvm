@@ -38,6 +38,12 @@ namespace Octopus {
 	};
 
 	class LocationNode : public Node {
+	public:
+		LocationNode(DILocation *location);
+		virtual std::string getCode();
+	private:
+		int line;
+		int column;
 	};
 }
 
