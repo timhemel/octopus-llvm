@@ -46,7 +46,7 @@ namespace Octopus {
 		if (pred_begin(&B) == pred_end(&B)) {
 			CFGEntryNode *source_node = entry_nodes_map[B.getParent()];
 			InstructionNode *destination_node = findOrCreateInstructionNode(&B.front());
-			createEdge("BB_TO",source_node,destination_node);
+			createAndStoreEdge("BB_TO",source_node,destination_node);
 		}
 		for (pred_iterator PI = pred_begin(&B), E = pred_end(&B); PI != E; ++PI) {
 			BasicBlock &Pred = **PI;
@@ -56,7 +56,7 @@ namespace Octopus {
 		if (succ_begin(&B) == succ_end(&B)) {
 			InstructionNode *source_node = findOrCreateInstructionNode(&B.back());
 			CFGExitNode *destination_node = exit_nodes_map[B.getParent()];
-			createEdge("BB_TO",source_node,destination_node);
+			createAndStoreEdge("BB_TO",source_node,destination_node);
 		}
 		for (succ_iterator PI = succ_begin(&B), E = succ_end(&B); PI != E; ++PI) {
 			BasicBlock &Succ = **PI;
@@ -68,7 +68,32 @@ namespace Octopus {
 	{
 		InstructionNode *source_instruction_node = findOrCreateInstructionNode(&source_block.back());
 		InstructionNode *destination_instruction_node = findOrCreateInstructionNode(&destination_block.front());
-		createEdge("BB_TO",source_instruction_node,destination_instruction_node);
+		createAndStoreEdge("BB_TO",source_instruction_node,destination_instruction_node);
+	}
+
+	bool isInstructionNode(Node *n)
+	{
+		return n->isInstruction();
+	}
+
+	void OctopusGraph::createDataDependenceEdges()
+	{
+		node_iterator node = find_if(node_begin(), node_end(), isInstructionNode);
+		while (node != node_end()) {
+			InstructionNode *instruction_node = (InstructionNode *) *node;
+			Instruction *llvm_instruction = ((InstructionNode *) *node)->getLLVMInstruction();
+			// see if there is a data dependence (depends on instruction)
+			for(int operand_no = 0, E = llvm_instruction->getNumOperands(); operand_no != E; ++operand_no) {
+				const Value *operand = llvm_instruction->getOperand(operand_no);
+				if (isa<Instruction>(operand)) {
+					const Instruction *ins = (const Instruction *) operand;
+					InstructionNode *defining_node = instruction_map[ins];
+					Edge *e = createAndStoreEdge("USE",*node, defining_node);
+					e->setProperty("operand_no",std::to_string(operand_no));
+				}
+			}
+			node = find_if(++node, node_end(), isInstructionNode);
+		}
 	}
 
 	OctopusGraph::node_iterator OctopusGraph::node_begin()
@@ -109,13 +134,14 @@ namespace Octopus {
 		if (previous_instruction == 0) return;
 		InstructionNode *previous_instruction_node = findOrCreateInstructionNode(previous_instruction);
 		InstructionNode *current_instruction_node = findOrCreateInstructionNode(current_instruction);
-		createEdge("FLOWS_TO",previous_instruction_node,current_instruction_node);
+		createAndStoreEdge("FLOWS_TO",previous_instruction_node,current_instruction_node);
 	}
 
-	void OctopusGraph::createEdge(std::string label, Node *source_node, Node *destination_node)
+	Edge* OctopusGraph::createAndStoreEdge(std::string label, Node *source_node, Node *destination_node)
 	{
-		Edge edge(label, source_node, destination_node);
+		Edge *edge = new Edge(label, source_node, destination_node);
 		edges.insert(edge);
+		return edge;
 	}
 
 	void OctopusGraph::updateSlotMap(InstructionNode *instruction_node)
@@ -133,5 +159,11 @@ namespace Octopus {
 	Edge::Edge(std::string label, Node *source_node, Node *destination_node) : label(label), source_node(source_node), destination_node(destination_node)
 	{
 	}
+
+	void Edge::setProperty(std::string key, std::string value)
+	{
+		properties[key] = value;
+	}
+
 
 }

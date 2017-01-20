@@ -14,7 +14,7 @@ namespace GraphWriter {
 		void writeFooter();
 		void writeNode(Octopus::Node *n);
 		void writeNodes(Octopus::OctopusGraph &octopus_graph);
-		void writeEdge(const Octopus::Edge &e);
+		void writeEdge(const Octopus::Edge *e);
 		void writeEdges(Octopus::OctopusGraph &octopus_graph);
 
 		std::ostream &ost;

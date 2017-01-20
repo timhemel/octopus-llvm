@@ -11,6 +11,7 @@
 using namespace llvm;
 
 static cl::opt<bool> OutputGraphviz("graphviz", cl::desc("Write graph in graphviz format"));
+static cl::opt<bool> NoDataDependenceEdges("noddg", cl::desc("Do not generate DDG edges"));
 
 namespace {
 	struct OctopusGraphPass : public FunctionPass {
@@ -50,6 +51,9 @@ bool OctopusGraphPass::runOnFunction(Function &F)
 	for(Function::iterator b = F.begin(), be = F.end(); b != be; ++b) {
 		// link basic block with predecessors and successors?
 		octopus_graph.linkBasicBlock(*b);
+	}
+	if (!NoDataDependenceEdges) {
+		octopus_graph.createDataDependenceEdges();
 	}
 	octopus_graph.finalizeFunction();
 	return false;

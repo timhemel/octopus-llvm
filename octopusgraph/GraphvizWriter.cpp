@@ -30,14 +30,18 @@ namespace GraphWriter{
 		}
 	}
 
-	void GraphvizWriter::writeEdge(const Edge &e)
+	void GraphvizWriter::writeEdge(const Edge *e)
 	{
-		size_t source_id = (size_t) e.source_node;
+		size_t source_id = (size_t) e->source_node;
 		ost << "\tv" << source_id;
 		ost << " -> v";
-		size_t destination_id = (size_t) e.destination_node;
+		size_t destination_id = (size_t) e->destination_node;
 		ost << destination_id;
-		ost << " [label=" << e.label << "]\n";
+		ost << " [label=\"" << e->label;
+		for(Edge::property_iterator p = e->properties_begin(), E = e->properties_end(); p != E; ++p) {
+			ost << "\\n" << p->first << '=' << p->second;
+		}
+		ost << "\"]\n";
 	}
 
 	void GraphvizWriter::writeEdges(OctopusGraph &octopus_graph)

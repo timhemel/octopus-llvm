@@ -10,6 +10,7 @@ namespace Octopus {
 	class Node {
 	public:
 		virtual std::string getCode() = 0;
+		virtual bool isInstruction() { return false; }
 	};
 
 	class CFGEntryNode : public Node {
