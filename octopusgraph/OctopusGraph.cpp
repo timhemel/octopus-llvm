@@ -162,7 +162,7 @@ namespace Octopus {
 			DILocation *location = (DILocation *) metadata;
 			FileNode *file_node = findOrCreateFileNode(location);
 			LocationNode *location_node = findOrCreateLocationNode(location);
-			createAndStoreEdge("IN_FILE",file_node,location_node);
+			createAndStoreEdge("IN_FILE",location_node,file_node);
 			return location_node;
 		}
 		return 0;
