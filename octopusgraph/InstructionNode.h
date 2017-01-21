@@ -12,11 +12,11 @@ namespace Octopus {
 	class InstructionNode : public Node {
 	public:
 		InstructionNode(OctopusGraph &ograph, Instruction *instruction);
-		virtual std::string getCode();
 		Instruction *getLLVMInstruction() { return llvm_instruction; }
 		virtual bool isInstruction() { return true; }
 
 	private:
+		virtual std::string _getCode();
 
 		OctopusGraph &octopus_graph;
 		Instruction *llvm_instruction;

@@ -19,8 +19,22 @@ namespace GraphWriter{
 	void GraphvizWriter::writeNode(Node *n)
 	{
 		ost << "\tv" << (size_t) n;
-		ost << "[label=\"" << n->getCode() << "\"];";
-		ost << "\n";
+		ost << "[label=\"";
+		int i = 0;
+		for(Node::property_iterator p = n->properties_begin(), E = n->properties_end(); p != E; ++p, ++i) {
+			if (i) {
+				ost << "\\n";
+			}
+			ost << p->first << '=';
+			int j = 0;
+			for(std::list<std::string>::iterator v = p->second.begin(), ve = p->second.end(); v != ve; ++v, ++j) {
+				if (j) {
+					ost << ',';
+				}
+				ost << *v;
+			}
+		}
+		ost << "\"]\n";
 	}
 
 	void GraphvizWriter::writeNodes(OctopusGraph &octopus_graph)
