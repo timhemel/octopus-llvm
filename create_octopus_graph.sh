@@ -7,5 +7,7 @@ basedir=`dirname "$0"`
 # Compile a C module and output graphviz
 # -mllvm -noddg  # do not generate data dependence edges
 # -mllvm -noloc  # do not generate location nodes and edges
-clang -w -g -O0 -c -Xclang -load -Xclang "$basedir"/build/octopusgraph/libOctopusGraphPass.so -mllvm -graphviz -o /dev/null "$@"
+# -graphviz      # output graphviz dot
+# -graphstream   # output graphstream dgs
+clang -w -g -O0 -c -Xclang -load -Xclang "$basedir"/build/octopusgraph/libOctopusGraphPass.so -mllvm -graphstream -o /dev/null "$@"
 

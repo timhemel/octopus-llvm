@@ -7,6 +7,7 @@
 #include "CommandLineOptions.h"
 #include "OctopusGraph.h"
 #include "GraphvizWriter.h"
+#include "DGSWriter.h"
 
 using namespace llvm;
 
@@ -63,6 +64,10 @@ bool OctopusGraphPass::doFinalization(Module &M)
 {
 	if (optionOutputGraphviz) {
 		GraphWriter::GraphvizWriter w(std::cout);
+		w.writeOctopusGraph(octopus_graph);
+	}
+	if (optionOutputGraphstream) {
+		GraphWriter::DGSWriter w(std::cout);
 		w.writeOctopusGraph(octopus_graph);
 	}
 	return false;

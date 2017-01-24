@@ -2,6 +2,7 @@ add_library(OctopusGraphPass MODULE
 	OctopusGraphPass.cpp
 	OctopusGraph.cpp
 	GraphvizWriter.cpp
+	DGSWriter.cpp
 	InstructionNode.cpp
 	OctopusNode.cpp
 	CommandLineOptions.cpp

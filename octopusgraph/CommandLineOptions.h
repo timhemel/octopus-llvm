@@ -14,6 +14,7 @@ using namespace llvm;
 namespace OctopusCLI {
 
 EXTERN bool optionOutputGraphviz;
+EXTERN bool optionOutputGraphstream;
 EXTERN bool optionNoDataDependenceEdges;
 EXTERN bool optionNoLocationNodesAndEdges;
 
