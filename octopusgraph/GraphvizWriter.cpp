@@ -18,7 +18,7 @@ namespace GraphWriter{
 
 	void GraphvizWriter::writeNode(Node *n)
 	{
-		ost << "\tv" << (size_t) n;
+		ost << "\tv" << n->getId();
 		ost << "[label=\"";
 		int i = 0;
 		for(Node::property_iterator p = n->properties_begin(), E = n->properties_end(); p != E; ++p, ++i) {
@@ -46,10 +46,10 @@ namespace GraphWriter{
 
 	void GraphvizWriter::writeEdge(const Edge *e)
 	{
-		size_t source_id = (size_t) e->source_node;
+		std::string source_id = e->source_node->getId();
 		ost << "\tv" << source_id;
 		ost << " -> v";
-		size_t destination_id = (size_t) e->destination_node;
+		std::string destination_id = e->destination_node->getId();
 		ost << destination_id;
 		ost << " [label=\"" << e->label;
 		for(Edge::property_iterator p = e->properties_begin(), E = e->properties_end(); p != E; ++p) {

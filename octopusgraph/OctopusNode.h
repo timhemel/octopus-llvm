@@ -16,6 +16,7 @@ namespace Octopus {
 		void setProperty(std::string key, std::list<std::string> value);
 		void addProperty(std::string key, std::string value);
 		std::string getCode();
+		std::string getId() { return id; }
 
 		typedef std::map<std::string,std::list<std::string> >::iterator property_iterator;
 		property_iterator properties_begin() { return properties.begin(); }
@@ -23,6 +24,7 @@ namespace Octopus {
 		
 	protected:
 		std::map<std::string, std::list<std::string> > properties;
+		std::string id;
 	};
 
 	class CFGEntryNode : public Node {

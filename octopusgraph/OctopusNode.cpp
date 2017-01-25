@@ -8,8 +8,7 @@ namespace Octopus {
 
 	Node::Node()
 	{
-		std::string key = std::to_string((size_t) this);
-		setProperty("key",key);
+		id = std::to_string((size_t) this);
 	}
 
 	void Node::setProperty(std::string key, std::string value)

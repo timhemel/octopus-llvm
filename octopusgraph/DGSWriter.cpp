@@ -56,7 +56,7 @@ namespace GraphWriter {
 
 	void DGSWriter::writeNode(Node *n)
 	{
-		ost << "an " << (size_t) n;
+		ost << "an " << n->getId();
 		writeNodeProperties(n);
 		ost << "\n";
 	}
@@ -81,8 +81,8 @@ namespace GraphWriter {
 
 	void DGSWriter::writeEdge(const Edge *e)
 	{
-		size_t source_id = (size_t) e->source_node;
-		size_t destination_id = (size_t) e->destination_node;
+		std::string source_id = e->source_node->getId();
+		std::string destination_id = e->destination_node->getId();
 		ost << "ae ";
 		ost << '"';
 		writeEscaped(e->label);
