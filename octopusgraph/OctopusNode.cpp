@@ -35,16 +35,19 @@ namespace Octopus {
 
 	CFGEntryNode::CFGEntryNode(Function *F) : Node(), function(F)
 	{
+		setProperty("type", "llvm_ir_function_entry");
 		setProperty("code", "ENTRY");
 	}
 
 	CFGExitNode::CFGExitNode(Function *F) : Node(), function(F)
 	{
+		setProperty("type", "llvm_ir_function_exit");
 		setProperty("code", "EXIT");
 	}
 
 	FileNode::FileNode(std::string fn) : Node(), filename(fn)
 	{
+		setProperty("type", "File");
 		setProperty("code", fn);
 	}
 
@@ -52,6 +55,7 @@ namespace Octopus {
 	{
 		line = location->getLine();
 		column = location->getColumn();
+		setProperty("type", "Location");
 		setProperty("code", _getCode());
 	}
 
