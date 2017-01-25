@@ -147,6 +147,8 @@ namespace Octopus {
 		// instruction opcode
 		IROpcodeNode *opcode_node = new IROpcodeNode(instruction->getLLVMInstruction());
 		nodes.push_back(opcode_node);
+		createAndStoreEdge("IS_AST_PARENT",instruction,opcode_node);
+		// operands
 	}
 
 	Edge* OctopusGraph::createAndStoreEdge(std::string label, Node *source_node, Node *destination_node)
