@@ -9,8 +9,8 @@ namespace Octopus {
 	{
 		llvm_instruction = instruction;
 		setProperty("code", _getCode());
+		setProperty("type", "llvm_ir_instruction");
 		setProperty("isCFGNode", "True");
-		setProperty("type", ""); // ?
 		setProperty("instr", llvm_instruction->getOpcodeName());
 		setProperty("operands", ""); // ?
 	}
@@ -21,6 +21,12 @@ namespace Octopus {
 		raw_string_ostream ost(s);
 		llvm_instruction->print(ost);
 		return ost.str();
+	}
+
+	IROpcodeNode::IROpcodeNode(Instruction *instruction)
+	{
+		setProperty("type", "llvm_ir_opcode");
+		setProperty("code",instruction->getOpcodeName());
 	}
 
 }

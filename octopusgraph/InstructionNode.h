@@ -19,6 +19,11 @@ namespace Octopus {
 		Instruction *llvm_instruction;
 	};
 
+	class IROpcodeNode : public Node {
+	public:
+		IROpcodeNode(Instruction *instruction);
+	};
+
 }
 
 #endif

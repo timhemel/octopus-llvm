@@ -141,6 +141,14 @@ namespace Octopus {
 		createAndStoreEdge("FLOWS_TO",previous_instruction_node,current_instruction_node);
 	}
 
+	void OctopusGraph::createInstructionChildren(InstructionNode *instruction)
+	{
+		// create descendants and link them
+		// instruction opcode
+		IROpcodeNode *opcode_node = new IROpcodeNode(instruction->getLLVMInstruction());
+		nodes.push_back(opcode_node);
+	}
+
 	Edge* OctopusGraph::createAndStoreEdge(std::string label, Node *source_node, Node *destination_node)
 	{
 		Edge *edge = new Edge(label, source_node, destination_node);
@@ -188,7 +196,7 @@ namespace Octopus {
 	InstructionNode *OctopusGraph::createInstructionNode(Instruction *instruction)
 	{
 		InstructionNode *ins_node = new InstructionNode(instruction);
-		// create the AST children
+		createInstructionChildren(ins_node);
 		return ins_node;
 	}
 
