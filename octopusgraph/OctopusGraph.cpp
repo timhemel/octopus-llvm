@@ -187,7 +187,9 @@ namespace Octopus {
 
 	InstructionNode *OctopusGraph::createInstructionNode(Instruction *instruction)
 	{
-		return new InstructionNode(*this,instruction);
+		InstructionNode *ins_node = new InstructionNode(instruction);
+		// create the AST children
+		return ins_node;
 	}
 
 	Edge::Edge(std::string label, Node *source_node, Node *destination_node) : label(label), source_node(source_node), destination_node(destination_node)

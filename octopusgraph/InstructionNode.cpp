@@ -5,7 +5,7 @@
 
 namespace Octopus {
 
-	InstructionNode::InstructionNode(OctopusGraph &ograph, Instruction *instruction) : Node(), octopus_graph(ograph)
+	InstructionNode::InstructionNode(Instruction *instruction) : Node()
 	{
 		llvm_instruction = instruction;
 		setProperty("code", _getCode());
