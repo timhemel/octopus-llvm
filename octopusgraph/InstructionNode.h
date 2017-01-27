@@ -7,6 +7,10 @@
 
 namespace Octopus {
 
+	// TODO: make template function?
+	std::string getValueString(const Value *value);
+	std::string getValueString(const Type *type);
+
 	class InstructionNode : public Node {
 	public:
 		InstructionNode(Instruction *instruction);

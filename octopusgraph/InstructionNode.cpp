@@ -5,6 +5,22 @@
 
 namespace Octopus {
 
+	std::string getValueString(const Value *value)
+	{
+		std::string s;
+		raw_string_ostream ost(s);
+		value->print(ost);
+		return ost.str();
+	}
+
+	std::string getValueString(const Type *type)
+	{
+		std::string s;
+		raw_string_ostream ost(s);
+		type->print(ost);
+		return ost.str();
+	}
+
 	InstructionNode::InstructionNode(Instruction *instruction) : Node()
 	{
 		llvm_instruction = instruction;
@@ -17,10 +33,7 @@ namespace Octopus {
 
 	std::string InstructionNode::_getCode()
 	{
-		std::string s;
-		raw_string_ostream ost(s);
-		llvm_instruction->print(ost);
-		return ost.str();
+		return getValueString(llvm_instruction);
 	}
 
 	IROpcodeNode::IROpcodeNode(Instruction *instruction) : Node()
