@@ -38,6 +38,16 @@ namespace Octopus {
 		IROperandNamedVariableNode(const Value *operand);
 	};
 
+	class IROperandConstantNode : public IROperandNode {
+	public:
+		IROperandConstantNode(const Constant *operand);
+	};
+
+	class IROperandUnnamedVariableNode : public IROperandNode {
+	public:
+		IROperandUnnamedVariableNode(const Value *operand);
+	};
+
 }
 
 #endif

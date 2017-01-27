@@ -163,11 +163,16 @@ namespace Octopus {
 	IROperandNode *OctopusGraph::createOperandNode(const Value *operand)
 	{
 		if (operand->hasName()) {
-			// create named variable node
 			return new IROperandNamedVariableNode(operand);
 		}
 		// constant?
+		const Constant *constant_value = dyn_cast<Constant>(operand);
+		if (constant_value) {
+			// TODO: perhaps introduce intermediairy nodes?
+			return new IROperandConstantNode(constant_value);
+		}
 		// variable?
+		return new IROperandUnnamedVariableNode(operand);
 		return 0;
 	}
 

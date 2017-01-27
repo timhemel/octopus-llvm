@@ -50,6 +50,23 @@ namespace Octopus {
 	{
 		setProperty("type", "llvm_ir_operand_variable");
 		setProperty("code","%" + operand->getName().str());
+		// setProperty("code",getValueString(operand));
+	}
+
+	IROperandConstantNode::IROperandConstantNode(const Constant *operand) : IROperandNode(operand)
+	{
+		setProperty("type", "llvm_ir_operand_constant");
+		setProperty("llvm_type", getValueString(operand->getType()));
+		// TODO remove type info from "code" property
+		setProperty("code", getValueString(operand));
+	}
+
+	IROperandUnnamedVariableNode::IROperandUnnamedVariableNode(const Value *operand) : IROperandNode(operand)
+	{
+		setProperty("type", "llvm_ir_operand_variable_unnamed");
+		// setProperty("code","%" + operand->getName().str());
+		// setProperty("code",getValueString(operand));
+		// get slot number from moduletracker
 	}
 
 }
