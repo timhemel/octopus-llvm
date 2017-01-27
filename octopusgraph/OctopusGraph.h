@@ -67,6 +67,7 @@ namespace Octopus {
 		void createInstructionChildren(InstructionNode *instruction);
 		IROperandNode *createOperandNode(const Value *operand);
 
+		void storeNode(Node *node) { nodes.push_back(node); }
 		Edge *createAndStoreEdge(std::string label, Node *source_node, Node *destination_node);
 		LocationNode* findOrCreateLocationAndFileNodes(InstructionNode *instruction);
 		FileNode* findOrCreateFileNode(DILocation *location);

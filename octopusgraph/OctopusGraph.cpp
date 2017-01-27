@@ -20,11 +20,11 @@ namespace Octopus {
 	{
 		CFGEntryNode *cfg_entry_node = new CFGEntryNode(&F);
 		entry_nodes_map[&F] = cfg_entry_node;
-		nodes.push_back(cfg_entry_node);
+		storeNode(cfg_entry_node);
 
 		CFGExitNode *cfg_exit_node = new CFGExitNode(&F);
 		exit_nodes_map[&F] = cfg_exit_node;
-		nodes.push_back(cfg_exit_node);
+		storeNode(cfg_exit_node);
 	}
 
 	void OctopusGraph::addBlockLabel(BasicBlock &B)
@@ -121,7 +121,7 @@ namespace Octopus {
 		InstructionNode *instruction_node = instruction_map[instruction];
 		if (instruction_node == 0) {
 			instruction_node = createInstructionNode(instruction);
-			nodes.push_back(instruction_node);
+			storeNode(instruction_node);
 			instruction_map[instruction] = instruction_node;
 			if (!optionNoLocationNodesAndEdges) {
 				LocationNode *location_node = findOrCreateLocationAndFileNodes(instruction_node);
@@ -147,14 +147,14 @@ namespace Octopus {
 		// instruction opcode
 		Instruction *llvm_instruction = instruction->getLLVMInstruction();
 		IROpcodeNode *opcode_node = new IROpcodeNode(llvm_instruction);
-		nodes.push_back(opcode_node);
+		storeNode(opcode_node);
 		createAndStoreEdge("IS_AST_PARENT",instruction,opcode_node);
 		// operands
 		for(int operand_no = 0, E = llvm_instruction->getNumOperands(); operand_no != E; ++operand_no) {
 			const Value *operand = llvm_instruction->getOperand(operand_no);
 			IROperandNode * operand_node = createOperandNode(operand);
 			if (operand_node != 0) {
-				nodes.push_back(operand_node);
+				storeNode(operand_node);
 				createAndStoreEdge("IS_AST_PARENT",instruction,operand_node);
 			}
 		}
@@ -198,7 +198,7 @@ namespace Octopus {
 		FileNode *file_node = file_map[location->getFilename().str()];
 		if (file_node == 0) {
 			file_node = new FileNode(location->getFilename().str());
-			nodes.push_back(file_node);
+			storeNode(file_node);
 			file_map[location->getFilename().str()] = file_node;
 		}
 		return file_node;
@@ -209,7 +209,7 @@ namespace Octopus {
 		LocationNode *location_node = location_map[location];
 		if (location_node == 0) {
 			location_node = new LocationNode(location);
-			nodes.push_back(location_node);
+			storeNode(location_node);
 			location_map[location] = location_node;
 		}
 		return location_node;
