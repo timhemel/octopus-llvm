@@ -23,10 +23,20 @@ namespace Octopus {
 		return ost.str();
 	}
 
-	IROpcodeNode::IROpcodeNode(Instruction *instruction)
+	IROpcodeNode::IROpcodeNode(Instruction *instruction) : Node()
 	{
 		setProperty("type", "llvm_ir_opcode");
 		setProperty("code",instruction->getOpcodeName());
+	}
+
+	IROperandNode::IROperandNode(const Value *operand) : Node()
+	{
+	}
+
+	IROperandNamedVariableNode::IROperandNamedVariableNode(const Value *operand) : IROperandNode(operand)
+	{
+		setProperty("type", "llvm_ir_operand_variable");
+		setProperty("code","%" + operand->getName().str());
 	}
 
 }

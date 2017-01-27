@@ -65,6 +65,7 @@ namespace Octopus {
 		void linkInstructionWithPredecessor(Instruction *previous_instruction, Instruction *current_instruction);
 		void linkBasicBlockInstructions(BasicBlock &source_block, BasicBlock &destination_block);
 		void createInstructionChildren(InstructionNode *instruction);
+		IROperandNode *createOperandNode(const Value *operand);
 
 		Edge *createAndStoreEdge(std::string label, Node *source_node, Node *destination_node);
 		LocationNode* findOrCreateLocationAndFileNodes(InstructionNode *instruction);

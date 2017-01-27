@@ -145,10 +145,30 @@ namespace Octopus {
 	{
 		// create descendants and link them
 		// instruction opcode
-		IROpcodeNode *opcode_node = new IROpcodeNode(instruction->getLLVMInstruction());
+		Instruction *llvm_instruction = instruction->getLLVMInstruction();
+		IROpcodeNode *opcode_node = new IROpcodeNode(llvm_instruction);
 		nodes.push_back(opcode_node);
 		createAndStoreEdge("IS_AST_PARENT",instruction,opcode_node);
 		// operands
+		for(int operand_no = 0, E = llvm_instruction->getNumOperands(); operand_no != E; ++operand_no) {
+			const Value *operand = llvm_instruction->getOperand(operand_no);
+			IROperandNode * operand_node = createOperandNode(operand);
+			if (operand_node != 0) {
+				nodes.push_back(operand_node);
+				createAndStoreEdge("IS_AST_PARENT",instruction,operand_node);
+			}
+		}
+	}
+
+	IROperandNode *OctopusGraph::createOperandNode(const Value *operand)
+	{
+		if (operand->hasName()) {
+			// create named variable node
+			return new IROperandNamedVariableNode(operand);
+		}
+		// constant?
+		// variable?
+		return 0;
 	}
 
 	Edge* OctopusGraph::createAndStoreEdge(std::string label, Node *source_node, Node *destination_node)

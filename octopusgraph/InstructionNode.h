@@ -24,6 +24,16 @@ namespace Octopus {
 		IROpcodeNode(Instruction *instruction);
 	};
 
+	class IROperandNode : public Node {
+	public:
+		IROperandNode(const Value *operand);
+	};
+
+	class IROperandNamedVariableNode : public IROperandNode {
+	public:
+		IROperandNamedVariableNode(const Value *operand);
+	};
+
 }
 
 #endif
