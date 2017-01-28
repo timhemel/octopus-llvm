@@ -64,6 +64,7 @@ namespace Octopus {
 	private:
 		InstructionNode* findOrCreateInstructionNode(Instruction *instruction);
 		InstructionNode *createInstructionNode(Instruction *instruction);
+		InstructionNode *createAndStoreInstructionNode(Instruction *instruction);
 		void linkInstructionWithPredecessor(Instruction *previous_instruction, Instruction *current_instruction);
 		void linkBasicBlockInstructions(BasicBlock &source_block, BasicBlock &destination_block);
 		void createInstructionChildren(InstructionNode *instruction);

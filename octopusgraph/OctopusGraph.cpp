@@ -117,23 +117,30 @@ namespace Octopus {
 		return edges.end();
 	}
 
+	InstructionNode* OctopusGraph::createAndStoreInstructionNode(Instruction *instruction)
+	{
+		InstructionNode *instruction_node;
+		instruction_node = createInstructionNode(instruction);
+		storeNode(instruction_node);
+		if (instruction_node->needsSlot()) {
+			slot_tracker.add(instruction_node->getLLVMInstruction());
+		}
+		instruction_map[instruction] = instruction_node;
+		if (!optionNoLocationNodesAndEdges) {
+			LocationNode *location_node = findOrCreateLocationAndFileNodes(instruction_node);
+			if (location_node != 0) {
+				createAndStoreEdge("LOCATED_AT",instruction_node,location_node);
+			}
+		}
+		return instruction_node;
+	}
+
 
 	InstructionNode* OctopusGraph::findOrCreateInstructionNode(Instruction *instruction)
 	{
 		InstructionNode *instruction_node = instruction_map[instruction];
 		if (instruction_node == 0) {
-			instruction_node = createInstructionNode(instruction);
-			storeNode(instruction_node);
-			if (instruction_node->needsSlot()) {
-				slot_tracker.add(instruction_node->getLLVMInstruction());
-			}
-			instruction_map[instruction] = instruction_node;
-			if (!optionNoLocationNodesAndEdges) {
-				LocationNode *location_node = findOrCreateLocationAndFileNodes(instruction_node);
-				if (location_node != 0) {
-					createAndStoreEdge("LOCATED_AT",instruction_node,location_node);
-				}
-			}
+			createAndStoreInstructionNode(instruction);
 		}
 		return instruction_node;
 	}
