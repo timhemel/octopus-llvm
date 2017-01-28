@@ -3,6 +3,7 @@
 #include "llvm/IR/DebugInfoMetadata.h"
 #include "CommandLineOptions.h"
 #include "OctopusGraph.h"
+#include "GraphBuilderVisitor.h"
 
 
 namespace Octopus {
@@ -120,7 +121,10 @@ namespace Octopus {
 	InstructionNode* OctopusGraph::createAndStoreInstructionNode(Instruction *instruction)
 	{
 		InstructionNode *instruction_node;
-		instruction_node = createInstructionNode(instruction);
+		// instruction_node = createInstructionNode(instruction);
+		InstructionBuilderVisitor ib_visitor(this);
+		ib_visitor.visit(instruction);
+		instruction_node = ib_visitor.getInstructionNode();
 		storeNode(instruction_node);
 		if (instruction_node->needsSlot()) {
 			slot_tracker.add(instruction_node->getLLVMInstruction());

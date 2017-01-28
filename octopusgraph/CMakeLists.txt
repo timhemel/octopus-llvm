@@ -6,6 +6,7 @@ add_library(OctopusGraphPass MODULE
 	InstructionNode.cpp
 	OctopusNode.cpp
 	CommandLineOptions.cpp
+	GraphBuilderVisitor.cpp
 )
 
 target_compile_features(OctopusGraphPass PRIVATE cxx_range_for cxx_auto_type)
