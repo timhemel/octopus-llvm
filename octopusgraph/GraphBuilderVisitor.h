@@ -30,6 +30,9 @@ namespace Octopus {
 		virtual void visitConstantPointerNull(const Constant *constant) { return visitConstant(constant); }
 		virtual void visitConstantTokenNone(const Constant *constant) { return visitConstant(constant); }
 		virtual void visitConstantExpr(const ConstantExpr *constant_expr) { return visitConstant(constant_expr); }
+
+		virtual void visitLocalValue(const Value *operand) { }
+
 	protected:
 		virtual void _visitOperands(InstructionNode *instruction_node, Instruction &instruction);
 		virtual void _visitOperand(const Value *operand);
@@ -49,9 +52,12 @@ namespace Octopus {
 		void visitReturnInst(ReturnInst &instruction);
 		void visitBinaryOperator(BinaryOperator &instruction);
 		void visitUnaryInstruction(UnaryInstruction &instruction);
+		void visitCmpInst(CmpInst &instruction);
 
 		virtual void visitNamedOperand(const Value *operand);
 		virtual void visitConstant(const Constant *constant);
+
+		virtual void visitLocalValue(const Value *operand);
 
 	private:
 		OctopusGraph *octopus_graph;

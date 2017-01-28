@@ -51,22 +51,24 @@ namespace Octopus {
 	{
 	}
 
-	IROperandNamedVariableNode::IROperandNamedVariableNode(const Value *operand) : IROperandNode(operand)
+	IROperandNamedVariableNode::IROperandNamedVariableNode(const Value *operand, int operand_no) : IROperandNode(operand)
 	{
 		setProperty("type", "llvm_ir_operand_variable");
 		setProperty("code","%" + operand->getName().str());
 		// setProperty("code",getValueString(operand));
+		setProperty("operand_no", std::to_string(operand_no));
 	}
 
-	IROperandConstantNode::IROperandConstantNode(const Constant *operand) : IROperandNode(operand)
+	IROperandConstantNode::IROperandConstantNode(const Constant *operand, int operand_no) : IROperandNode(operand)
 	{
 		setProperty("type", "llvm_ir_operand_constant");
 		setProperty("llvm_type", getValueString(operand->getType()));
 		// TODO remove type info from "code" property
 		setProperty("code", getValueString(operand));
+		setProperty("operand_no", std::to_string(operand_no));
 	}
 
-	IROperandUnnamedVariableNode::IROperandUnnamedVariableNode(OctopusGraph *octopus_graph, const Value *operand) : IROperandNode(operand)
+	IROperandUnnamedVariableNode::IROperandUnnamedVariableNode(OctopusGraph *octopus_graph, const Value *operand, int operand_no) : IROperandNode(operand)
 	{
 		setProperty("type", "llvm_ir_operand_variable_unnamed");
 		// setProperty("code","%" + operand->getName().str());
@@ -74,6 +76,7 @@ namespace Octopus {
 		// get slot number from moduletracker
 		int slot = octopus_graph->getSlotTracker().getSlotIndex(operand);
 		setProperty("code", "%" + std::to_string(slot));
+		setProperty("operand_no", std::to_string(operand_no));
 	}
 
 }

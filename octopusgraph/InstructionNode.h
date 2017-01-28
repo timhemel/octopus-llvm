@@ -38,17 +38,17 @@ namespace Octopus {
 
 	class IROperandNamedVariableNode : public IROperandNode {
 	public:
-		IROperandNamedVariableNode(const Value *operand);
+		IROperandNamedVariableNode(const Value *operand, int operand_no);
 	};
 
 	class IROperandConstantNode : public IROperandNode {
 	public:
-		IROperandConstantNode(const Constant *operand);
+		IROperandConstantNode(const Constant *operand, int operand_no);
 	};
 
 	class IROperandUnnamedVariableNode : public IROperandNode {
 	public:
-		IROperandUnnamedVariableNode(OctopusGraph *octopus_graph, const Value *operand);
+		IROperandUnnamedVariableNode(OctopusGraph *octopus_graph, const Value *operand, int operand_no);
 	};
 
 }

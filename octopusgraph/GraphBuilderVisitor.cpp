@@ -32,6 +32,24 @@ namespace Octopus {
 		if (constant_value && !isa<GlobalValue>(constant_value)) {
 			return visitConstant(constant_value);
 		}
+		const InlineAsm *inline_asm = dyn_cast<InlineAsm>(operand);
+		if (inline_asm) {
+			// TODO: return visitiInlineAsm(...)
+			return;
+		}
+		auto *meta_data = dyn_cast<MetadataAsValue>(operand);
+		if (meta_data) {
+			// TODO: metadata
+			return;
+		}
+		// unnamed variable
+		const GlobalValue *global_value = dyn_cast<GlobalValue>(operand);
+		if (global_value) {
+			// TODO: global value
+			return;
+		}
+		// local value
+		visitLocalValue(operand);
 	}
 
 	void GraphBuilderVisitor::_visitConstant(const Constant *constant)
@@ -109,20 +127,34 @@ namespace Octopus {
 		_visitOperands(instruction_node,instruction);
 	}
 
+	void InstructionBuilderVisitor::visitCmpInst(CmpInst &instruction)
+	{
+		errs() << "CMP INS!" << instruction << "\n";
+		instruction_node = new InstructionNode(&instruction);
+		_visitOperands(instruction_node,instruction);
+	}
+
 	// void InstructionBuilderVisitor::visitConstant
 
 	void InstructionBuilderVisitor::visitNamedOperand(const Value *operand)
 	{
-		IROperandNamedVariableNode *named_operand_node = new IROperandNamedVariableNode(operand);
+		IROperandNamedVariableNode *named_operand_node = new IROperandNamedVariableNode(operand, getChildNum());
 		octopus_graph->storeNode(named_operand_node);
 		octopus_graph->createAndStoreEdge("IS_AST_PARENT", getParentNode(), named_operand_node);
 	}
 
 	void InstructionBuilderVisitor::visitConstant(const Constant *constant)
 	{
-		IROperandConstantNode *constant_node = new IROperandConstantNode(constant);
+		IROperandConstantNode *constant_node = new IROperandConstantNode(constant, getChildNum());
 		octopus_graph->storeNode(constant_node);
 		octopus_graph->createAndStoreEdge("IS_AST_PARENT", getParentNode(), constant_node);
+	}
+
+	void InstructionBuilderVisitor::visitLocalValue(const Value *operand)
+	{
+		IROperandUnnamedVariableNode *unnamed_variable_node = new IROperandUnnamedVariableNode(octopus_graph, operand, getChildNum());
+		octopus_graph->storeNode(unnamed_variable_node);
+		octopus_graph->createAndStoreEdge("IS_AST_PARENT", getParentNode(), unnamed_variable_node);
 	}
 
 }
