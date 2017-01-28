@@ -7,11 +7,12 @@
 
 namespace Octopus {
 
-	void OctopusGraph::initializeFunction()
+	void OctopusGraph::initializeFunction(Function &F)
 	{
+		slot_tracker.reset();
 	}
 
-	void OctopusGraph::finalizeFunction()
+	void OctopusGraph::finalizeFunction(Function &F)
 	{
 	}
 
@@ -29,6 +30,7 @@ namespace Octopus {
 
 	void OctopusGraph::addBlockLabel(BasicBlock &B)
 	{
+		slot_tracker.add(&B);
 	}
 
 	void OctopusGraph::createAndConnectInstructionNodesForBasicBlock(BasicBlock &B)
@@ -122,6 +124,9 @@ namespace Octopus {
 		if (instruction_node == 0) {
 			instruction_node = createInstructionNode(instruction);
 			storeNode(instruction_node);
+			if (instruction_node->needsSlot()) {
+				slot_tracker.add(instruction_node->getLLVMInstruction());
+			}
 			instruction_map[instruction] = instruction_node;
 			if (!optionNoLocationNodesAndEdges) {
 				LocationNode *location_node = findOrCreateLocationAndFileNodes(instruction_node);
@@ -172,7 +177,7 @@ namespace Octopus {
 			return new IROperandConstantNode(constant_value);
 		}
 		// variable?
-		return new IROperandUnnamedVariableNode(operand);
+		return new IROperandUnnamedVariableNode(this, operand);
 		return 0;
 	}
 

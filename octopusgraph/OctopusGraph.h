@@ -7,6 +7,7 @@
 #include <string>
 #include <ostream>
 #include "llvm/IR/Function.h"
+#include "SimpleSlotTracker.h"
 #include "OctopusNode.h"
 #include "InstructionNode.h"
 
@@ -43,8 +44,9 @@ namespace Octopus {
 	// lookup tables for DIInfo -> LocationNode
 	class OctopusGraph {
 	public:
-		void initializeFunction();
-		void finalizeFunction();
+		void initializeFunction(Function &F);
+		void finalizeFunction(Function &F);
+		SimpleSlotTracker &getSlotTracker() { return slot_tracker; }
 		void createEntryAndExitNodesForFunction(Function &F);
 		void addBlockLabel(BasicBlock &B);
 		void createAndConnectInstructionNodesForBasicBlock(BasicBlock &B);
@@ -80,6 +82,8 @@ namespace Octopus {
 		std::map<DILocation*,LocationNode *> location_map;
 		std::list<Node*> nodes;
 		std::set<Edge *,edge_compare> edges;
+
+		SimpleSlotTracker slot_tracker;
 	};
 
 }

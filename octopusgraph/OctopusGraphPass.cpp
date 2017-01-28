@@ -39,7 +39,7 @@ OctopusGraphPass::OctopusGraphPass() : FunctionPass(ID)
 
 bool OctopusGraphPass::runOnFunction(Function &F)
 {
-	octopus_graph.initializeFunction();
+	octopus_graph.initializeFunction(F);
 	octopus_graph.createEntryAndExitNodesForFunction(F);
 	for(Function::iterator b = F.begin(), be = F.end(); b != be; ++b) {
 		octopus_graph.addBlockLabel(*b);
@@ -51,7 +51,7 @@ bool OctopusGraphPass::runOnFunction(Function &F)
 	if (!optionNoDataDependenceEdges) {
 		octopus_graph.createDataDependenceEdges();
 	}
-	octopus_graph.finalizeFunction();
+	octopus_graph.finalizeFunction(F);
 	return false;
 }
 

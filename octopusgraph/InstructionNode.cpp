@@ -31,6 +31,11 @@ namespace Octopus {
 		setProperty("operands", ""); // ?
 	}
 
+	bool InstructionNode::needsSlot()
+	{
+		return (!llvm_instruction->hasName() && !llvm_instruction->getType()->isVoidTy());
+	}
+
 	std::string InstructionNode::_getCode()
 	{
 		return getValueString(llvm_instruction);
@@ -61,12 +66,14 @@ namespace Octopus {
 		setProperty("code", getValueString(operand));
 	}
 
-	IROperandUnnamedVariableNode::IROperandUnnamedVariableNode(const Value *operand) : IROperandNode(operand)
+	IROperandUnnamedVariableNode::IROperandUnnamedVariableNode(OctopusGraph *octopus_graph, const Value *operand) : IROperandNode(operand)
 	{
 		setProperty("type", "llvm_ir_operand_variable_unnamed");
 		// setProperty("code","%" + operand->getName().str());
 		// setProperty("code",getValueString(operand));
 		// get slot number from moduletracker
+		int slot = octopus_graph->getSlotTracker().getSlotIndex(operand);
+		setProperty("code", "%" + std::to_string(slot));
 	}
 
 }

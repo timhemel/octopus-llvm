@@ -7,6 +7,8 @@
 
 namespace Octopus {
 
+	class OctopusGraph;
+
 	// TODO: make template function?
 	std::string getValueString(const Value *value);
 	std::string getValueString(const Type *type);
@@ -16,6 +18,7 @@ namespace Octopus {
 		InstructionNode(Instruction *instruction);
 		Instruction *getLLVMInstruction() { return llvm_instruction; }
 		virtual bool isInstruction() { return true; }
+		bool needsSlot();
 
 	private:
 		virtual std::string _getCode();
@@ -45,7 +48,7 @@ namespace Octopus {
 
 	class IROperandUnnamedVariableNode : public IROperandNode {
 	public:
-		IROperandUnnamedVariableNode(const Value *operand);
+		IROperandUnnamedVariableNode(OctopusGraph *octopus_graph, const Value *operand);
 	};
 
 }
