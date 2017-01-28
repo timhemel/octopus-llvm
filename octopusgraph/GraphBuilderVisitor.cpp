@@ -12,7 +12,9 @@ namespace Octopus {
 		errs() << "OPERANDS\n";
 		for(int operand_no = 0, E = instruction.getNumOperands(); operand_no != E; ++operand_no) {
 			const Value *operand = instruction.getOperand(operand_no);
+			child_num_stack.push(operand_no);
 			_visitOperand(operand);
+			child_num_stack.pop();
 		}
 		node_stack.pop();
 	}

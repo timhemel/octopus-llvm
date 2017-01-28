@@ -35,7 +35,9 @@ namespace Octopus {
 		virtual void _visitOperand(const Value *operand);
 		virtual void _visitConstant(const Constant *constant);
 		Node * getParentNode() { return node_stack.top(); }
+		int getChildNum() { return child_num_stack.top(); }
 		std::stack<Node *> node_stack;
+		std::stack<int> child_num_stack;
 	};
 
 	class InstructionBuilderVisitor : public InstVisitor<InstructionBuilderVisitor>, GraphBuilderVisitor {
