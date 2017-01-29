@@ -13,8 +13,16 @@ namespace Octopus {
 
 	class OctopusGraph;
 
-	class GraphBuilderVisitor {
+	class InstructionASTVisitor {
 	public:
+		void visit(Instruction &instruction);
+		void visit(Instruction *instruction) { visit(*instruction); }
+
+		virtual void preVisitInstruction(Instruction &instruction) { }
+		virtual void postVisitInstruction(Instruction &instruction) { }
+
+		virtual void visitInstructionOpcode(Instruction &instruction) { }
+
 		virtual void visitNullOperand() { }
 		virtual void visitNamedOperand(const Value *operand) { }
 		virtual void visitConstant(const Constant *constant) { }
@@ -34,25 +42,27 @@ namespace Octopus {
 		virtual void visitLocalValue(const Value *operand) { }
 
 	protected:
-		virtual void _visitOperands(InstructionNode *instruction_node, Instruction &instruction);
+		virtual void _visitInstruction(Instruction &instruction);
+		virtual void _visitOperands(Instruction &instruction);
 		virtual void _visitOperand(const Value *operand);
 		virtual void _visitConstant(const Constant *constant);
 		Node * getParentNode() { return node_stack.top(); }
-		int getChildNum() { return child_num_stack.top(); }
+		int getChildNum() { return current_child_num; }
 		std::stack<Node *> node_stack;
 		std::stack<int> child_num_stack;
+		int current_child_num;
 	};
 
-	class InstructionBuilderVisitor : public InstVisitor<InstructionBuilderVisitor>, GraphBuilderVisitor {
-	public:
-		InstructionBuilderVisitor(OctopusGraph *graph) : octopus_graph(graph) { }
-		InstructionNode *getInstructionNode() { return instruction_node; }
 
-		void visitInstruction(Instruction &instruction);
-		void visitReturnInst(ReturnInst &instruction);
-		void visitBinaryOperator(BinaryOperator &instruction);
-		void visitUnaryInstruction(UnaryInstruction &instruction);
-		void visitCmpInst(CmpInst &instruction);
+	class IRASTBuilderVisitor : public InstructionASTVisitor {
+	public:
+		IRASTBuilderVisitor(OctopusGraph *graph) : octopus_graph(graph) { }
+
+		void build(InstructionNode *instruction_node);
+
+		virtual void preVisitInstruction(Instruction &instruction);
+		virtual void postVisitInstruction(Instruction &instruction);
+		virtual void visitInstructionOpcode(Instruction &instruction);
 
 		virtual void visitNamedOperand(const Value *operand);
 		virtual void visitConstant(const Constant *constant);

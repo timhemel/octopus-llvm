@@ -17,6 +17,7 @@ EXTERN bool optionOutputGraphviz;
 EXTERN bool optionOutputGraphstream;
 EXTERN bool optionNoDataDependenceEdges;
 EXTERN bool optionNoLocationNodesAndEdges;
+EXTERN bool optionNoIRAST;
 
 }
 

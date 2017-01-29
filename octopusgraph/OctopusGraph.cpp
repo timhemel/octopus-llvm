@@ -98,6 +98,17 @@ namespace Octopus {
 		}
 	}
 
+	void OctopusGraph::createIRAST()
+	{
+		node_iterator node = find_if(node_begin(), node_end(), isInstructionNode);
+		while (node != node_end()) {
+			InstructionNode *instruction_node = (InstructionNode *) *node;
+			IRASTBuilderVisitor ib_visitor(this);
+			ib_visitor.build(instruction_node);
+			node = find_if(++node, node_end(), isInstructionNode);
+		}
+	}
+
 	OctopusGraph::node_iterator OctopusGraph::node_begin()
 	{
 		return nodes.begin();
@@ -121,10 +132,7 @@ namespace Octopus {
 	InstructionNode* OctopusGraph::createAndStoreInstructionNode(Instruction *instruction)
 	{
 		InstructionNode *instruction_node;
-		// instruction_node = createInstructionNode(instruction);
-		InstructionBuilderVisitor ib_visitor(this);
-		ib_visitor.visit(instruction);
-		instruction_node = ib_visitor.getInstructionNode();
+		instruction_node = createInstructionNode(instruction);
 		storeNode(instruction_node);
 		if (instruction_node->needsSlot()) {
 			slot_tracker.add(instruction_node->getLLVMInstruction());
@@ -162,7 +170,7 @@ namespace Octopus {
 		// create descendants and link them
 		// instruction opcode
 		Instruction *llvm_instruction = instruction->getLLVMInstruction();
-		IROpcodeNode *opcode_node = new IROpcodeNode(llvm_instruction);
+		IROpcodeNode *opcode_node = new IROpcodeNode(llvm_instruction,0);
 		storeNode(opcode_node);
 		createAndStoreEdge("IS_AST_PARENT",instruction,opcode_node);
 		// operands
@@ -239,7 +247,7 @@ namespace Octopus {
 	InstructionNode *OctopusGraph::createInstructionNode(Instruction *instruction)
 	{
 		InstructionNode *ins_node = new InstructionNode(instruction);
-		createInstructionChildren(ins_node);
+		// createInstructionChildren(ins_node);
 		return ins_node;
 	}
 

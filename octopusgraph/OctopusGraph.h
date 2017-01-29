@@ -52,6 +52,7 @@ namespace Octopus {
 		void createAndConnectInstructionNodesForBasicBlock(BasicBlock &B);
 		void linkBasicBlock(BasicBlock &B);
 		void createDataDependenceEdges();
+		void createIRAST();
 
 		void storeNode(Node *node) { nodes.push_back(node); }
 		Edge *createAndStoreEdge(std::string label, Node *source_node, Node *destination_node);

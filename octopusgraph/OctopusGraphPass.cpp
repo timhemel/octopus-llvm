@@ -51,6 +51,9 @@ bool OctopusGraphPass::runOnFunction(Function &F)
 	if (!optionNoDataDependenceEdges) {
 		octopus_graph.createDataDependenceEdges();
 	}
+	if (!optionNoIRAST) {
+		octopus_graph.createIRAST();
+	}
 	octopus_graph.finalizeFunction(F);
 	return false;
 }

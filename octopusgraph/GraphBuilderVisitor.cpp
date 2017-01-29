@@ -5,23 +5,38 @@
 
 namespace Octopus {
 
-	void GraphBuilderVisitor::_visitOperands(InstructionNode *instruction_node, Instruction &instruction)
+	void InstructionASTVisitor::visit(Instruction &instruction)
 	{
-
-		node_stack.push(instruction_node);
-		errs() << "OPERANDS\n";
-		for(int operand_no = 0, E = instruction.getNumOperands(); operand_no != E; ++operand_no) {
-			const Value *operand = instruction.getOperand(operand_no);
-			child_num_stack.push(operand_no);
-			_visitOperand(operand);
-			child_num_stack.pop();
-		}
-		node_stack.pop();
+		_visitInstruction(instruction);
 	}
 
-	void GraphBuilderVisitor::_visitOperand(const Value *operand)
+	void InstructionASTVisitor::_visitInstruction(Instruction &instruction)
 	{
-		errs() << "OPERAND: " << *operand << "\n";
+		current_child_num = 0;
+		preVisitInstruction(instruction);
+		visitInstructionOpcode(instruction);
+		current_child_num++;
+		_visitOperands(instruction);
+		postVisitInstruction(instruction);
+	}
+
+
+	void InstructionASTVisitor::_visitOperands(Instruction &instruction)
+	{
+
+		for(int operand_no = 0, E = instruction.getNumOperands(); operand_no != E; ++operand_no) {
+			const Value *operand = instruction.getOperand(operand_no);
+			child_num_stack.push(current_child_num);
+			_visitOperand(operand);
+			current_child_num = child_num_stack.top();
+			current_child_num++;
+			child_num_stack.pop();
+		}
+	}
+
+	void InstructionASTVisitor::_visitOperand(const Value *operand)
+	{
+		errs() << "OPERAND: " << *operand << " num " << current_child_num << "\n";
 		if (!operand) {
 			return visitNullOperand();
 		}
@@ -52,7 +67,7 @@ namespace Octopus {
 		visitLocalValue(operand);
 	}
 
-	void GraphBuilderVisitor::_visitConstant(const Constant *constant)
+	void InstructionASTVisitor::_visitConstant(const Constant *constant)
 	{
 		errs() << "CONSTANT: " << *constant << "\n";
 		const ConstantInt *constant_int = dyn_cast<ConstantInt>(constant);
@@ -101,56 +116,47 @@ namespace Octopus {
 		// placeholder or erroneous constant
 	}
 
-	void InstructionBuilderVisitor::visitInstruction(Instruction &instruction)
+	void IRASTBuilderVisitor::build(InstructionNode *instr_node)
 	{
-		errs() << "visiting:" << instruction << "\n";
-		instruction_node = new InstructionNode(&instruction);
+		instruction_node = instr_node;
+		visit(instruction_node->getLLVMInstruction());
 	}
 
-	void InstructionBuilderVisitor::visitReturnInst(ReturnInst &instruction)
+
+	void IRASTBuilderVisitor::preVisitInstruction(Instruction &instruction)
 	{
-		errs() << "RETURN!" << instruction << "\n";
-		instruction_node = new InstructionNode(&instruction);
+		node_stack.push(instruction_node);
 	}
 
-	void InstructionBuilderVisitor::visitBinaryOperator(BinaryOperator &instruction)
+	void IRASTBuilderVisitor::postVisitInstruction(Instruction &instruction)
 	{
-		errs() << "BINOP!" << instruction << "\n";
-		instruction_node = new InstructionNode(&instruction);
-		_visitOperands(instruction_node,instruction);
+		node_stack.pop();
 	}
 
-	void InstructionBuilderVisitor::visitUnaryInstruction(UnaryInstruction &instruction)
+	void IRASTBuilderVisitor::visitInstructionOpcode(Instruction &instruction)
 	{
-		errs() << "UNARY INS!" << instruction << "\n";
-		instruction_node = new InstructionNode(&instruction);
-		_visitOperands(instruction_node,instruction);
+		errs() << "OPCODE: " << instruction.getOpcodeName() << "\n";
+		IROpcodeNode *opcode_node = new IROpcodeNode(&instruction, getChildNum());
+		// connect with parent
+		octopus_graph->storeNode(opcode_node);
+		octopus_graph->createAndStoreEdge("IS_AST_PARENT", getParentNode(), opcode_node);
 	}
 
-	void InstructionBuilderVisitor::visitCmpInst(CmpInst &instruction)
-	{
-		errs() << "CMP INS!" << instruction << "\n";
-		instruction_node = new InstructionNode(&instruction);
-		_visitOperands(instruction_node,instruction);
-	}
-
-	// void InstructionBuilderVisitor::visitConstant
-
-	void InstructionBuilderVisitor::visitNamedOperand(const Value *operand)
+	void IRASTBuilderVisitor::visitNamedOperand(const Value *operand)
 	{
 		IROperandNamedVariableNode *named_operand_node = new IROperandNamedVariableNode(operand, getChildNum());
 		octopus_graph->storeNode(named_operand_node);
 		octopus_graph->createAndStoreEdge("IS_AST_PARENT", getParentNode(), named_operand_node);
 	}
 
-	void InstructionBuilderVisitor::visitConstant(const Constant *constant)
+	void IRASTBuilderVisitor::visitConstant(const Constant *constant)
 	{
 		IROperandConstantNode *constant_node = new IROperandConstantNode(constant, getChildNum());
 		octopus_graph->storeNode(constant_node);
 		octopus_graph->createAndStoreEdge("IS_AST_PARENT", getParentNode(), constant_node);
 	}
 
-	void InstructionBuilderVisitor::visitLocalValue(const Value *operand)
+	void IRASTBuilderVisitor::visitLocalValue(const Value *operand)
 	{
 		IROperandUnnamedVariableNode *unnamed_variable_node = new IROperandUnnamedVariableNode(octopus_graph, operand, getChildNum());
 		octopus_graph->storeNode(unnamed_variable_node);
