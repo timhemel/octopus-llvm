@@ -165,41 +165,6 @@ namespace Octopus {
 		createAndStoreEdge("FLOWS_TO",previous_instruction_node,current_instruction_node);
 	}
 
-	void OctopusGraph::createInstructionChildren(InstructionNode *instruction)
-	{
-		// create descendants and link them
-		// instruction opcode
-		Instruction *llvm_instruction = instruction->getLLVMInstruction();
-		IROpcodeNode *opcode_node = new IROpcodeNode(llvm_instruction,0);
-		storeNode(opcode_node);
-		createAndStoreEdge("IS_AST_PARENT",instruction,opcode_node);
-		// operands
-		for(int operand_no = 0, E = llvm_instruction->getNumOperands(); operand_no != E; ++operand_no) {
-			const Value *operand = llvm_instruction->getOperand(operand_no);
-			IROperandNode * operand_node = createOperandNode(operand);
-			if (operand_node != 0) {
-				storeNode(operand_node);
-				createAndStoreEdge("IS_AST_PARENT",instruction,operand_node);
-			}
-		}
-	}
-
-	IROperandNode *OctopusGraph::createOperandNode(const Value *operand)
-	{
-		if (operand->hasName()) {
-			return new IROperandNamedVariableNode(operand,0);
-		}
-		// constant?
-		const Constant *constant_value = dyn_cast<Constant>(operand);
-		if (constant_value) {
-			// TODO: perhaps introduce intermediairy nodes?
-			return new IROperandConstantNode(constant_value,0);
-		}
-		// variable?
-		return new IROperandUnnamedVariableNode(this, operand,0);
-		return 0;
-	}
-
 	Edge* OctopusGraph::createAndStoreEdge(std::string label, Node *source_node, Node *destination_node)
 	{
 		Edge *edge = new Edge(label, source_node, destination_node);
@@ -247,7 +212,6 @@ namespace Octopus {
 	InstructionNode *OctopusGraph::createInstructionNode(Instruction *instruction)
 	{
 		InstructionNode *ins_node = new InstructionNode(instruction);
-		// createInstructionChildren(ins_node);
 		return ins_node;
 	}
 
