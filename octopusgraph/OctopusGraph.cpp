@@ -3,7 +3,7 @@
 #include "llvm/IR/DebugInfoMetadata.h"
 #include "CommandLineOptions.h"
 #include "OctopusGraph.h"
-#include "GraphBuilderVisitor.h"
+#include "InstructionASTVisitor.h"
 
 
 namespace Octopus {

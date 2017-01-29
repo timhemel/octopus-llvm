@@ -1,7 +1,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 #include "OctopusGraph.h"
-#include "GraphBuilderVisitor.h"
+#include "InstructionASTVisitor.h"
 
 namespace Octopus {
 
