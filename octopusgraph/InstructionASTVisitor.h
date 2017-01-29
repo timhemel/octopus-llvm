@@ -24,7 +24,8 @@ namespace Octopus {
 		virtual void visitInstructionOpcode(Instruction &instruction) { }
 
 		virtual void visitNullOperand() { }
-		virtual void visitNamedOperand(const Value *operand) { }
+		virtual void visitGlobalNamedOperand(const Value *operand) { }
+		virtual void visitLocalNamedOperand(const Value *operand) { }
 		virtual void visitConstant(const Constant *constant) { }
 		virtual void visitConstantInt(const ConstantInt *constant_int) { return visitConstant(constant_int); }
 		virtual void visitConstantFloat(const ConstantFP *constant_float) { return visitConstant(constant_float); }
@@ -39,6 +40,7 @@ namespace Octopus {
 		virtual void visitConstantTokenNone(const Constant *constant) { return visitConstant(constant); }
 		virtual void visitConstantExpr(const ConstantExpr *constant_expr) { return visitConstant(constant_expr); }
 
+		virtual void visitLabel(const BasicBlock *basic_block) { }
 		virtual void visitLocalValue(const Value *operand) { }
 
 	protected:
@@ -64,9 +66,11 @@ namespace Octopus {
 		virtual void postVisitInstruction(Instruction &instruction);
 		virtual void visitInstructionOpcode(Instruction &instruction);
 
-		virtual void visitNamedOperand(const Value *operand);
+		virtual void visitGlobalNamedOperand(const Value *operand);
+		virtual void visitLocalNamedOperand(const Value *operand);
 		virtual void visitConstant(const Constant *constant);
 
+		virtual void visitLabel(const BasicBlock *basic_block);
 		virtual void visitLocalValue(const Value *operand);
 
 	private:

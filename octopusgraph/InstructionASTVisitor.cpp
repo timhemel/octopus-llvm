@@ -36,12 +36,21 @@ namespace Octopus {
 
 	void InstructionASTVisitor::_visitOperand(const Value *operand)
 	{
-		errs() << "OPERAND: " << *operand << " num " << current_child_num << "\n";
+		errs() << "OPERAND: " << *operand << " childnum " << current_child_num << "\n";
 		if (!operand) {
 			return visitNullOperand();
 		}
+		const BasicBlock *basic_block = dyn_cast<BasicBlock>(operand);
+		if (basic_block) {
+			errs() << "LABEL!\n";
+			return visitLabel(basic_block);
+		}
+
 		if (operand->hasName()) {
-			return visitNamedOperand(operand);
+			if (isa<GlobalValue>(operand)) {
+				return visitGlobalNamedOperand(operand);
+			}
+			return visitLocalNamedOperand(operand);
 		}
 		const Constant *constant_value = dyn_cast<Constant>(operand);
 		if (constant_value && !isa<GlobalValue>(constant_value)) {
@@ -125,6 +134,7 @@ namespace Octopus {
 
 	void IRASTBuilderVisitor::preVisitInstruction(Instruction &instruction)
 	{
+		errs() << "INSTR:" << instruction << "\n";
 		node_stack.push(instruction_node);
 	}
 
@@ -142,9 +152,16 @@ namespace Octopus {
 		octopus_graph->createAndStoreEdge("IS_AST_PARENT", getParentNode(), opcode_node);
 	}
 
-	void IRASTBuilderVisitor::visitNamedOperand(const Value *operand)
+	void IRASTBuilderVisitor::visitLocalNamedOperand(const Value *operand)
 	{
-		IROperandNamedVariableNode *named_operand_node = new IROperandNamedVariableNode(operand, getChildNum());
+		IRLocalNamedVariableNode *named_operand_node = new IRLocalNamedVariableNode(operand, getChildNum());
+		octopus_graph->storeNode(named_operand_node);
+		octopus_graph->createAndStoreEdge("IS_AST_PARENT", getParentNode(), named_operand_node);
+	}
+
+	void IRASTBuilderVisitor::visitGlobalNamedOperand(const Value *operand)
+	{
+		IRGlobalNamedVariableNode *named_operand_node = new IRGlobalNamedVariableNode(operand, getChildNum());
 		octopus_graph->storeNode(named_operand_node);
 		octopus_graph->createAndStoreEdge("IS_AST_PARENT", getParentNode(), named_operand_node);
 	}
@@ -156,8 +173,17 @@ namespace Octopus {
 		octopus_graph->createAndStoreEdge("IS_AST_PARENT", getParentNode(), constant_node);
 	}
 
+	void IRASTBuilderVisitor::visitLabel(const BasicBlock *basic_block)
+	{
+		errs() << "create label node\n";
+		IRASTLabelNode *label_node = new IRASTLabelNode(octopus_graph, basic_block, getChildNum());
+		octopus_graph->storeNode(label_node);
+		octopus_graph->createAndStoreEdge("IS_AST_PARENT", getParentNode(), label_node);
+	}
+
 	void IRASTBuilderVisitor::visitLocalValue(const Value *operand)
 	{
+		// if label?
 		IROperandUnnamedVariableNode *unnamed_variable_node = new IROperandUnnamedVariableNode(octopus_graph, operand, getChildNum());
 		octopus_graph->storeNode(unnamed_variable_node);
 		octopus_graph->createAndStoreEdge("IS_AST_PARENT", getParentNode(), unnamed_variable_node);

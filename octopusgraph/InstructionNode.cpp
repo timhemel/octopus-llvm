@@ -52,11 +52,18 @@ namespace Octopus {
 	{
 	}
 
-	IROperandNamedVariableNode::IROperandNamedVariableNode(const Value *operand, int child_num) : IROperandNode(operand)
+	IRLocalNamedVariableNode::IRLocalNamedVariableNode(const Value *operand, int child_num) : IROperandNode(operand)
 	{
 		setProperty("type", "llvm_ir_operand_variable");
 		setProperty("code","%" + operand->getName().str());
 		// setProperty("code",getValueString(operand));
+		setProperty("childNum", std::to_string(child_num));
+	}
+
+	IRGlobalNamedVariableNode::IRGlobalNamedVariableNode(const Value *operand, int child_num) : IROperandNode(operand)
+	{
+		setProperty("type", "llvm_ir_operand_variable");
+		setProperty("code","@" + operand->getName().str());
 		setProperty("childNum", std::to_string(child_num));
 	}
 
@@ -77,6 +84,18 @@ namespace Octopus {
 		// get slot number from moduletracker
 		int slot = octopus_graph->getSlotTracker().getSlotIndex(operand);
 		setProperty("code", "%" + std::to_string(slot));
+		setProperty("childNum", std::to_string(child_num));
+	}
+
+	IRASTLabelNode::IRASTLabelNode(OctopusGraph *octopus_graph, const BasicBlock *basic_block, int child_num) : IROperandNode(basic_block)
+	{
+		setProperty("type", "llvm_ir_label");
+		if (basic_block->hasName()) {
+			setProperty("code", "%" + basic_block->getName().str());
+		} else {
+			int slot = octopus_graph->getSlotTracker().getSlotIndex(basic_block);
+			setProperty("code", "%" + std::to_string(slot));
+		}
 		setProperty("childNum", std::to_string(child_num));
 	}
 
