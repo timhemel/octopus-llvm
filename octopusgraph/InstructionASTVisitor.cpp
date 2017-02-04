@@ -125,6 +125,36 @@ namespace Octopus {
 		// placeholder or erroneous constant
 	}
 
+	void InstructionASTVisitor::visitConstantArray(const ConstantArray *constant_array)
+	{
+		errs() << "CONSTANTARRAY\n";
+		return visitConstant(constant_array);
+	}
+
+	void InstructionASTVisitor::visitConstantDataArray(const ConstantDataArray *constant_data_array)
+	{
+		errs() << "CONSTANTDATAARRAY\n";
+		return visitConstant(constant_data_array);
+	}
+
+	void InstructionASTVisitor::visitConstantStruct(const ConstantStruct *constant_struct)
+	{
+		errs() << "CONSTANTSTRUCT\n";
+		return visitConstant(constant_struct);
+	}
+
+	void InstructionASTVisitor::visitConstantVector(const Constant *constant)
+	{
+		errs() << "CONSTANTVECTOR\n";
+		return visitConstant(constant);
+	}
+
+	void InstructionASTVisitor::visitConstantDataVector(const Constant *constant)
+	{
+		errs() << "CONSTANTDATAVECTOR\n";
+		return visitConstant(constant);
+	}
+
 	void IRASTBuilderVisitor::build(InstructionNode *instr_node)
 	{
 		instruction_node = instr_node;

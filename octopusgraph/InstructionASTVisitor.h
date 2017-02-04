@@ -31,11 +31,11 @@ namespace Octopus {
 		virtual void visitConstantFloat(const ConstantFP *constant_float) { return visitConstant(constant_float); }
 		virtual void visitConstantAggregateZero(const Constant *constant) { return visitConstant(constant); }
 		virtual void visitBlockAddress(const BlockAddress *block_address) { return visitConstant(block_address); }
-		virtual void visitConstantArray(const ConstantArray *constant_array) { return visitConstant(constant_array); }
-		virtual void visitConstantDataArray(const ConstantDataArray *constant_data_array) { return visitConstant(constant_data_array); }
-		virtual void visitConstantStruct(const ConstantStruct *constant_struct) { return visitConstant(constant_struct); }
-		virtual void visitConstantVector(const Constant *constant) { return visitConstant(constant); }
-		virtual void visitConstantDataVector(const Constant *constant) { return visitConstant(constant); }
+		virtual void visitConstantArray(const ConstantArray *constant_array);
+		virtual void visitConstantDataArray(const ConstantDataArray *constant_data_array);
+		virtual void visitConstantStruct(const ConstantStruct *constant_struct);
+		virtual void visitConstantVector(const Constant *constant);
+		virtual void visitConstantDataVector(const Constant *constant);
 		virtual void visitConstantPointerNull(const Constant *constant) { return visitConstant(constant); }
 		virtual void visitConstantTokenNone(const Constant *constant) { return visitConstant(constant); }
 		virtual void visitConstantExpr(const ConstantExpr *constant_expr) { return visitConstant(constant_expr); }
