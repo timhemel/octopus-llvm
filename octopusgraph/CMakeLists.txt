@@ -16,6 +16,6 @@ set_target_properties(OctopusGraphPass PROPERTIES
 
 if(APPLE)
 	set_target_properties(OctopusGraphPass PROPERTIES
-		LINK_FLAGS "-undefines dynamic_lookup"
+		LINK_FLAGS "-undefined dynamic_lookup"
 	)
 endif(APPLE)
